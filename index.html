@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SSFC Web and Socials Helper</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>&#x1F3C9;</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>&#x1F4BB;</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 <style>
@@ -1136,10 +1136,7 @@ function switchTab(name){
     const entry = images.find(e => e.id === imgId);
     if (!entry) return;
     const canvas = renderToCanvas(entry, sizeName, tw, th);
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/jpeg', getQuality());
-    a.download = entry.baseName + '_' + sizeName + '_' + tw + 'x' + th + '.jpg';
-    a.click();
+    saveDL(canvas.toDataURL('image/jpeg', getQuality()),entry.baseName + '_' + sizeName + '_' + tw + 'x' + th + '.jpg');
   }
 
   async function downloadImage(imgId) {
@@ -1153,11 +1150,7 @@ function switchTab(name){
       zip.file(entry.baseName + '_' + name + '_' + tw + 'x' + th + '.jpg', base64, { base64: true });
     });
     const blob = await zip.generateAsync({ type: 'blob' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = entry.baseName + '_thumbnails.zip';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    await saveBlobDL(blob,entry.baseName + '_thumbnails.zip');
   }
 
   async function downloadAll() {
@@ -1180,11 +1173,7 @@ function switchTab(name){
     });
 
     const blob = await zip.generateAsync({ type: 'blob' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'thumbnails_' + ready.length + '_images.zip';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    await saveBlobDL(blob,'thumbnails_' + ready.length + '_images.zip');
 
     btn.disabled = false;
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v7M3.5 5.5l3 3 3-3M1 10h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Download All as ZIP';
@@ -1744,6 +1733,21 @@ window.addEventListener('touchend',()=>{drag=null;});
 function todayStr(){return new Date().toISOString().slice(0,10);}
 function safeN(s){return s.replace(/[^a-z0-9]/gi,'_');}
 
+// On iOS, a.click() is blocked — open in new tab instead so user can long-press → Save
+function saveDL(url, filename){
+  const a=document.createElement('a');
+  a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+async function saveBlobDL(blob, filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  await new Promise(r=>setTimeout(r,150));
+  URL.revokeObjectURL(url);
+}
+
 let exportRes=2;
 function setRes(r){
   exportRes=r;
@@ -1804,8 +1808,7 @@ async function downloadOne(en){
     const sz=sizes[0];
     const cv2=await compHQ(en,sz.id,sz.w*r,sz.h*r);
     const blob=await new Promise(res=>cv2.toBlob(res,'image/jpeg',1.0));
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-    a.download=en.name+'_'+safeN(cfg.name)+(r>1?'_'+sz.w*r+'x'+sz.h*r:'')+'.jpg'; a.click();
+    await saveBlobDL(blob,en.name+'_'+safeN(cfg.name)+(r>1?'_'+sz.w*r+'x'+sz.h*r:'')+'.jpg');
   } else {
     const zip=new JSZip();
     for(const sz of sizes){
@@ -1814,8 +1817,7 @@ async function downloadOne(en){
       zip.file(en.name+'_'+sz.id+(r>1?'_'+sz.w*r+'x'+sz.h*r:'')+'.jpg',blob);
     }
     const blob=await zip.generateAsync({type:'blob'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-    a.download=en.name+'_'+safeN(cfg.name)+'_'+todayStr()+'.zip'; a.click();
+    await saveBlobDL(blob,en.name+'_'+safeN(cfg.name)+'_'+todayStr()+'.zip');
   }
 }
 
@@ -1844,8 +1846,7 @@ async function doExport(){
     }
   }
   const blob=await zip.generateAsync({type:'blob'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=safeN(cfg.name)+'_'+todayStr()+'.zip'; a.click();
+  await saveBlobDL(blob,safeN(cfg.name)+'_'+todayStr()+'.zip');
   btn.disabled=false; btn.textContent='⬇ Download All (ZIP)';
 }
 
@@ -2039,8 +2040,7 @@ async function spDownload(mode='jpg'){
       const blob=await new Promise(r=>out.toBlob(r,'image/jpeg',0.95));
       blobs.push({fname,blob});
     } else {
-      const a=document.createElement('a');
-      a.download=fname; a.href=out.toDataURL('image/jpeg',0.95); a.click();
+      saveDL(out.toDataURL('image/jpeg',0.95),fname);
       await new Promise(r=>setTimeout(r,120));
     }
   }
@@ -2048,8 +2048,7 @@ async function spDownload(mode='jpg'){
     const zip=new JSZip();
     blobs.forEach(({fname,blob})=>zip.file(fname,blob));
     const zblob=await zip.generateAsync({type:'blob'});
-    const a=document.createElement('a');
-    a.download=base+'_panels.zip'; a.href=URL.createObjectURL(zblob); a.click();
+    await saveBlobDL(zblob,base+'_panels.zip');
   }
 }
 
