@@ -390,6 +390,50 @@ button{touch-action:manipulation}
 @supports(padding-bottom:env(safe-area-inset-bottom)){
   body{padding-bottom:env(safe-area-inset-bottom)}
 }
+
+/* ── Team List Tuesday ── */
+#tab-teamlist{
+  --red: #b22222; --red-dark: #7a1717; --green: #00573f; --green-dark: #003d2b;
+  --bg: #f5f3ef; --card-bg: #ffffff; --border: #ddd6cc; --text: #222; --muted: #6b6b6b;
+  --warn-bg: #fff4e5; --warn-border: #e0a336;
+  background: var(--bg); color: var(--text);
+}
+#tab-teamlist header{ background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); color: #fff; padding: 28px 24px; text-align: center; }
+#tab-teamlist header h1{ margin: 0 0 6px 0; font-size: 26px; letter-spacing: 0.3px; }
+#tab-teamlist header p{ margin: 0; opacity: 0.9; font-size: 14px; }
+#tab-teamlist main{ max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+#tab-teamlist .tl-dropzone{ border: 2px dashed var(--green); border-radius: 12px; background: var(--card-bg); padding: 36px 20px; text-align: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+#tab-teamlist .tl-dropzone.tl-dragover{ background: #eaf5f1; border-color: var(--green-dark); }
+#tab-teamlist .tl-dropzone h2{ margin: 0 0 6px 0; font-size: 17px; color: var(--green-dark); }
+#tab-teamlist .tl-dropzone p{ margin: 0; color: var(--muted); font-size: 13px; }
+#tab-teamlist .tl-dropzone input[type="file"]{ display: none; }
+#tab-teamlist .tl-filelist{ margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+#tab-teamlist .tl-filechip{ background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+#tab-teamlist .tl-filechip button{ border: none; background: none; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+#tab-teamlist .tl-toolbar{ display: flex; justify-content: space-between; align-items: center; margin: 24px 0 12px; flex-wrap: wrap; gap: 10px; }
+#tab-teamlist .tl-toolbar h2{ font-size: 16px; margin: 0; color: var(--green-dark); }
+#tab-teamlist button.tl-secondary{ background: none; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
+#tab-teamlist button.tl-secondary:hover{ border-color: var(--muted); }
+#tab-teamlist .tl-warning{ background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #7a5000; margin-bottom: 14px; }
+#tab-teamlist .tl-article-group{ background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 26px; overflow: hidden; }
+#tab-teamlist .tl-article-group .tl-article-head{ display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--green); color: #fff; gap: 10px; flex-wrap: wrap; }
+#tab-teamlist .tl-article-head .tl-source{ font-size: 13px; font-weight: 600; }
+#tab-teamlist .tl-article-body{ padding: 16px; }
+#tab-teamlist .tl-field-card{ border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+#tab-teamlist .tl-field-card:last-child{ margin-bottom: 0; }
+#tab-teamlist .tl-field-card .tl-field-head{ display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #faf8f4; border-bottom: 1px solid var(--border); gap: 10px; }
+#tab-teamlist .tl-field-head .tl-label{ font-size: 13px; font-weight: 600; color: var(--green-dark); }
+#tab-teamlist .tl-field-card textarea{ width: 100%; border: none; resize: vertical; padding: 14px 16px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; color: var(--text); display: block; }
+#tab-teamlist .tl-field-card textarea.tl-title-field{ min-height: 44px; }
+#tab-teamlist .tl-field-card textarea.tl-description-field{ min-height: 100px; }
+#tab-teamlist .tl-field-card textarea.tl-teamlist-field{ min-height: 220px; }
+#tab-teamlist button.tl-copy{ background: var(--red); color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
+#tab-teamlist button.tl-copy:hover{ background: var(--red-dark); }
+#tab-teamlist button.tl-copy.tl-copied{ background: var(--green); }
+#tab-teamlist .tl-empty-state{ text-align: center; color: var(--muted); font-size: 14px; padding: 30px 0; }
+#tab-teamlist footer.tl-notes{ max-width: 900px; margin: 30px auto 0; padding: 16px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+#tab-teamlist footer.tl-notes ul{ margin: 6px 0 0 18px; padding: 0; }
+
 </style>
 </head>
 <body>
@@ -409,6 +453,10 @@ button{touch-action:manipulation}
     <button class="app-tab" onclick="switchTab('resizer')" id="tab-btn-resizer">
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
       Image Resizer
+    </button>
+    <button class="app-tab" onclick="switchTab('teamlist')" id="tab-btn-teamlist">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v2a1 1 0 001 1h4a1 1 0 001-1V3M8 11h8M8 15h5"/></svg>
+      Team List Tuesday
     </button>
   </div>
 </header>
@@ -702,6 +750,45 @@ button{touch-action:manipulation}
     </div>
   </div>
 </div>
+</div>
+</div>
+<div class="tab-panel" id="tab-teamlist">
+<header>
+  <h1>🐰 Team List Tuesday</h1>
+  <p>Drop in this week's Word docs. Get CMS-ready markdown out. Nothing else changes.</p>
+</header>
+
+<main>
+  <div class="tl-dropzone" id="tlDropzone">
+    <h2>Drop team list Word docs here</h2>
+    <p>or click to choose files — main squad, pathways, whatever you've got, all at once (.docx only)</p>
+    <input type="file" id="tlFileInput" accept=".docx" multiple>
+    <div class="tl-filelist" id="tlFileList"></div>
+  </div>
+
+  <div id="tlWarnings"></div>
+
+  <div id="tlToolbar" class="tl-toolbar" style="display:none;">
+    <h2 id="tlTeamCount"></h2>
+    <button class="tl-secondary" id="tlClearBtn">Start over</button>
+  </div>
+
+  <div id="tlResults"></div>
+  <div id="tlEmptyState" class="tl-empty-state">No files loaded yet — drop this week's team list doc(s) above.</div>
+</main>
+
+<footer class="tl-notes">
+  Formatting only — player names, numbers, order, captain markers and coach names are never changed, corrected or inferred.
+  <ul>
+    <li>Each Word doc becomes one article group: a Title field (📝 + headline), a Description field (the intro paragraph(s) before the first team), and a Team List field.</li>
+    <li>If a doc contains multiple teams (e.g. Pathways), they're all combined into one Team List field, separated by a "----" divider.</li>
+    <li>Team headings are detected automatically (any line starting with "The" and ending in "is:").</li>
+    <li>If a player's line is typed with a number in the document (e.g. "21- Cody Walker"), that exact number is used, even if it's out of the usual position order. Only when no number is typed does the tool number players by their position in the list.</li>
+    <li>Any hyperlink in the document (in the headline, description, or elsewhere) is converted to markdown link format, e.g. [link text](https://example.com).</li>
+    <li>If a title or a team's coach line can't be found, it's flagged so you can check the source doc.</li>
+    <li>Everything runs in your browser — no files are uploaded anywhere.</li>
+  </ul>
+</footer>
 </div>
 <div class="tab-panel" id="tab-video">
 <div style="max-width:700px;margin:40px auto;padding:0 24px;">
@@ -2129,6 +2216,339 @@ _spMain.addEventListener('drop',e=>{e.preventDefault();spLoad(e.dataTransfer.fil
 
 buildUI();
 preload().then(()=>loadFA());
+</script>
+<script>
+(function(){
+const WNS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const headingRe = /^The\b.*\bis:$/i;
+const coachRe = /^(Head Coach|Coach)\s*[–—-]\s*.+/i;
+const releaseLineRe = /^FOR IMMEDIATE/i;
+const TEAM_DIVIDER = '\n\n----\n\n';
+const RNS_PKG = 'http://schemas.openxmlformats.org/package/2006/relationships';
+const RNS_OFFICE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+
+let loadedFiles = [];
+
+const dropzone = document.getElementById('tlDropzone');
+const fileInput = document.getElementById('tlFileInput');
+const fileListEl = document.getElementById('tlFileList');
+const warningsEl = document.getElementById('tlWarnings');
+const resultsEl = document.getElementById('tlResults');
+const toolbarEl = document.getElementById('tlToolbar');
+const teamCountEl = document.getElementById('tlTeamCount');
+const emptyStateEl = document.getElementById('tlEmptyState');
+const clearBtn = document.getElementById('tlClearBtn');
+
+dropzone.addEventListener('click', (e) => {
+  if (e.target === fileInput) return;
+  fileInput.click();
+});
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('tl-dragover');
+});
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('tl-dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('tl-dragover');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e) => {
+  handleFiles(e.target.files);
+  fileInput.value = '';
+});
+clearBtn.addEventListener('click', () => {
+  loadedFiles = [];
+  render();
+});
+
+async function handleFiles(fileArray) {
+  const files = Array.from(fileArray).filter(f => f.name.toLowerCase().endsWith('.docx'));
+  for (const file of files) {
+    const entry = { name: file.name, title: null, description: [], teams: [], error: null };
+    loadedFiles.push(entry);
+    render();
+    try {
+      const paragraphs = await parseDocxToParagraphs(file);
+      const article = extractArticle(paragraphs);
+      entry.title = article.title;
+      entry.description = article.description;
+      entry.teams = article.teams;
+      if (article.teams.length === 0) {
+        entry.error = 'No team list found in this file (no heading line ending in "is:" detected).';
+      }
+      if (!article.title) {
+        entry.error = (entry.error ? entry.error + ' ' : '') + 'Title not found (expected a headline before the intro paragraphs).';
+      }
+    } catch (err) {
+      entry.error = 'Could not read this file — is it a valid .docx? (' + err.message + ')';
+    }
+    render();
+  }
+}
+
+async function loadHyperlinkRelationships(zip) {
+  const map = {};
+  const relsFile = zip.file('word/_rels/document.xml.rels');
+  if (!relsFile) return map;
+  const relsXml = await relsFile.async('text');
+  const relsDoc = new DOMParser().parseFromString(relsXml, 'application/xml');
+  const relNodes = relsDoc.getElementsByTagNameNS(RNS_PKG, 'Relationship');
+  for (const rel of relNodes) {
+    const id = rel.getAttribute('Id');
+    const target = rel.getAttribute('Target');
+    if (id) map[id] = target;
+  }
+  return map;
+}
+
+function extractRunText(node) {
+  const tNodes = node.getElementsByTagNameNS(WNS, 't');
+  let text = '';
+  for (const t of tNodes) text += t.textContent;
+  return text;
+}
+
+function paragraphTextWithLinks(pNode, relsMap) {
+  let result = '';
+  for (const child of pNode.childNodes) {
+    if (child.nodeType !== 1) continue;
+    const localName = child.localName || (child.nodeName || '').split(':').pop();
+    if (localName === 'hyperlink') {
+      const relId = child.getAttributeNS(RNS_OFFICE, 'id') || child.getAttribute('r:id');
+      const url = relId ? relsMap[relId] : null;
+      const linkText = extractRunText(child);
+      result += (url && linkText) ? `[${linkText}](${url})` : linkText;
+    } else {
+      result += extractRunText(child);
+    }
+  }
+  return result;
+}
+
+async function parseDocxToParagraphs(file) {
+  const buffer = await file.arrayBuffer();
+  const zip = await JSZip.loadAsync(buffer);
+  const relsMap = await loadHyperlinkRelationships(zip);
+  const docXmlFile = zip.file('word/document.xml');
+  if (!docXmlFile) throw new Error('missing word/document.xml');
+  const xmlText = await docXmlFile.async('text');
+  const xmlDoc = new DOMParser().parseFromString(xmlText, 'application/xml');
+  const paraNodes = xmlDoc.getElementsByTagNameNS(WNS, 'p');
+  const paragraphs = [];
+  for (const p of paraNodes) {
+    paragraphs.push(paragraphTextWithLinks(p, relsMap).trim());
+  }
+  return paragraphs;
+}
+
+function extractTeams(paragraphs) {
+  const teams = [];
+  let current = null;
+  let mode = null;
+  let counter = 0;
+
+  for (const raw of paragraphs) {
+    const text = raw.trim();
+    if (!text) continue;
+
+    if (headingRe.test(text)) {
+      if (current) teams.push(current);
+      current = { heading: text, roster: [], interchange: [], coach: null };
+      mode = 'roster';
+      counter = 0;
+      continue;
+    }
+    if (!current) continue;
+    if (text === 'Interchange:') { mode = 'interchange'; continue; }
+    if (coachRe.test(text)) {
+      current.coach = text;
+      teams.push(current);
+      current = null;
+      mode = null;
+      continue;
+    }
+    counter += 1;
+    const parsed = parsePlayerLine(text);
+    const entry = parsed.explicit
+      ? { num: parsed.num, name: parsed.name }
+      : { num: String(counter), name: text };
+    if (mode === 'interchange') current.interchange.push(entry);
+    else current.roster.push(entry);
+  }
+  if (current) teams.push(current);
+  return teams;
+}
+
+function parsePlayerLine(raw) {
+  const m = raw.match(/^(\d{1,3})\s*[.\-:)]?\s+(.+)$/);
+  if (m && m[2].trim()) {
+    return { explicit: true, num: m[1], name: m[2].trim() };
+  }
+  return { explicit: false };
+}
+
+function formatTeam(team) {
+  const lines = [];
+  lines.push('### ' + team.heading);
+  lines.push('');
+  for (const p of team.roster) lines.push(`${p.num}- ${p.name}  `);
+  lines.push('');
+  lines.push('**Interchange:**  ');
+  for (const p of team.interchange) lines.push(`${p.num}- ${p.name}  `);
+  lines.push('');
+  lines.push(team.coach ? `**${team.coach}**` : '**[Coach line not found — check source doc]**');
+  return lines.join('\n');
+}
+
+function extractArticle(paragraphs) {
+  let title = null;
+  const description = [];
+  let i = 0;
+  for (; i < paragraphs.length; i++) {
+    const text = paragraphs[i].trim();
+    if (!text) continue;
+    if (releaseLineRe.test(text)) continue;
+    if (headingRe.test(text)) break;
+    if (title === null) { title = text; continue; }
+    description.push(text);
+  }
+  const teams = extractTeams(paragraphs.slice(i));
+  return { title, description, teams };
+}
+
+function titleField(entry) {
+  return entry.title ? '📝 ' + entry.title : '';
+}
+
+function descriptionField(entry) {
+  return entry.description.join('\n\n');
+}
+
+function teamListField(entry) {
+  return entry.teams.map(formatTeam).join(TEAM_DIVIDER);
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('tl-copied');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('tl-copied');
+    }, 1400);
+  });
+}
+
+function render() {
+  fileListEl.innerHTML = '';
+  loadedFiles.forEach((f, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'tl-filechip';
+    chip.innerHTML = `<span>${escapeHtml(f.name)}</span>`;
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      loadedFiles.splice(idx, 1);
+      render();
+    });
+    chip.appendChild(removeBtn);
+    fileListEl.appendChild(chip);
+  });
+
+  warningsEl.innerHTML = '';
+  loadedFiles.filter(f => f.error).forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'tl-warning';
+    div.textContent = `${f.name}: ${f.error}`;
+    warningsEl.appendChild(div);
+  });
+
+  loadedFiles.forEach(f => {
+    f.teams.filter(t => !t.coach).forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'tl-warning';
+      div.textContent = `${f.name}: coach line not found for "${t.heading}" — check that team's block in the source doc.`;
+      warningsEl.appendChild(div);
+    });
+  });
+
+  resultsEl.innerHTML = '';
+  const articlesReady = loadedFiles.filter(f => f.teams.length > 0);
+
+  if (articlesReady.length === 0) {
+    toolbarEl.style.display = 'none';
+    emptyStateEl.style.display = loadedFiles.length ? 'none' : 'block';
+    return;
+  }
+
+  emptyStateEl.style.display = 'none';
+  toolbarEl.style.display = 'flex';
+  const teamTotal = articlesReady.reduce((sum, f) => sum + f.teams.length, 0);
+  teamCountEl.textContent = `${articlesReady.length} article${articlesReady.length === 1 ? '' : 's'} · ${teamTotal} team${teamTotal === 1 ? '' : 's'} formatted`;
+
+  articlesReady.forEach((entry) => {
+    const group = document.createElement('div');
+    group.className = 'tl-article-group';
+
+    const head = document.createElement('div');
+    head.className = 'tl-article-head';
+    head.innerHTML = `<span class="tl-source">${escapeHtml(entry.name)}</span>`;
+    group.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'tl-article-body';
+
+    body.appendChild(buildFieldCard('Title', titleField(entry), 'tl-title-field'));
+    body.appendChild(buildFieldCard('Description', descriptionField(entry), 'tl-description-field'));
+    body.appendChild(buildFieldCard(
+      entry.teams.length > 1 ? `Team List (${entry.teams.length} teams)` : 'Team List',
+      teamListField(entry),
+      'tl-teamlist-field'
+    ));
+
+    group.appendChild(body);
+    resultsEl.appendChild(group);
+  });
+}
+
+function buildFieldCard(label, value, textareaClass) {
+  const card = document.createElement('div');
+  card.className = 'tl-field-card';
+
+  const headRow = document.createElement('div');
+  headRow.className = 'tl-field-head';
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'tl-label';
+  labelSpan.textContent = label;
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'tl-copy';
+  copyBtn.textContent = 'Copy';
+  copyBtn.addEventListener('click', () => copyText(value, copyBtn));
+  headRow.appendChild(labelSpan);
+  headRow.appendChild(copyBtn);
+  card.appendChild(headRow);
+
+  const textarea = document.createElement('textarea');
+  textarea.readOnly = true;
+  textarea.spellcheck = false;
+  textarea.value = value;
+  textarea.className = textareaClass;
+  card.appendChild(textarea);
+
+  return card;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+render();
+})();
 </script>
 </body>
 </html>
