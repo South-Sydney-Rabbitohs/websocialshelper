@@ -6,12 +6,13 @@
 <title>SSFC Web and Socials Helper</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>&#x1F4BB;</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 <style>
 
 /* ── Shared ── */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#ebebeb;color:#222;min-height:100vh;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#ebebeb;color:#222;min-height:100vh;-webkit-text-size-adjust:100%;--g:#1a3d2b;--gh:#0e2419;--gl:#e8f0eb}
 .app-header{background:#1a3d2b;color:#fff;padding:0 24px;display:flex;align-items:stretch;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .app-brand{display:flex;align-items:center;gap:10px;padding:12px 20px 12px 0;border-right:1px solid rgba(255,255,255,.15);margin-right:16px;flex-shrink:0}
 .app-brand-icon{font-size:22px;line-height:1}
@@ -391,78 +392,64 @@ button{touch-action:manipulation}
   body{padding-bottom:env(safe-area-inset-bottom)}
 }
 
-/* ── Team List Tuesday ── */
-#tab-teamlist{
-  --red: #b22222; --red-dark: #7a1717; --green: #00573f; --green-dark: #003d2b;
-  --bg: #f5f3ef; --card-bg: #ffffff; --border: #ddd6cc; --text: #222; --muted: #6b6b6b;
-  --warn-bg: #fff4e5; --warn-border: #e0a336;
-  background: var(--bg); color: var(--text);
-}
-#tab-teamlist header{ background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); color: #fff; padding: 28px 24px; text-align: center; }
-#tab-teamlist header h1{ margin: 0 0 6px 0; font-size: 26px; letter-spacing: 0.3px; }
-#tab-teamlist header p{ margin: 0; opacity: 0.9; font-size: 14px; }
-#tab-teamlist main{ max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
-#tab-teamlist .tl-dropzone{ border: 2px dashed var(--green); border-radius: 12px; background: var(--card-bg); padding: 36px 20px; text-align: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
-#tab-teamlist .tl-dropzone.tl-dragover{ background: #eaf5f1; border-color: var(--green-dark); }
-#tab-teamlist .tl-dropzone h2{ margin: 0 0 6px 0; font-size: 17px; color: var(--green-dark); }
-#tab-teamlist .tl-dropzone p{ margin: 0; color: var(--muted); font-size: 13px; }
-#tab-teamlist .tl-dropzone input[type="file"]{ display: none; }
-#tab-teamlist .tl-filelist{ margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
-#tab-teamlist .tl-filechip{ background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-#tab-teamlist .tl-filechip button{ border: none; background: none; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
-#tab-teamlist .tl-toolbar{ display: flex; justify-content: space-between; align-items: center; margin: 24px 0 12px; flex-wrap: wrap; gap: 10px; }
-#tab-teamlist .tl-toolbar h2{ font-size: 16px; margin: 0; color: var(--green-dark); }
-#tab-teamlist button.tl-secondary{ background: none; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
-#tab-teamlist button.tl-secondary:hover{ border-color: var(--muted); }
-#tab-teamlist .tl-warning{ background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #7a5000; margin-bottom: 14px; }
-#tab-teamlist .tl-article-group{ background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 26px; overflow: hidden; }
-#tab-teamlist .tl-article-group .tl-article-head{ display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--green); color: #fff; gap: 10px; flex-wrap: wrap; }
-#tab-teamlist .tl-article-head .tl-source{ font-size: 13px; font-weight: 600; }
-#tab-teamlist .tl-article-body{ padding: 16px; }
-#tab-teamlist .tl-field-card{ border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
-#tab-teamlist .tl-field-card:last-child{ margin-bottom: 0; }
-#tab-teamlist .tl-field-card .tl-field-head{ display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #faf8f4; border-bottom: 1px solid var(--border); gap: 10px; }
-#tab-teamlist .tl-field-head .tl-label{ font-size: 13px; font-weight: 600; color: var(--green-dark); }
-#tab-teamlist .tl-field-card textarea{ width: 100%; border: none; resize: vertical; padding: 14px 16px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 13px; line-height: 1.5; color: var(--text); display: block; }
-#tab-teamlist .tl-field-card textarea.tl-title-field{ min-height: 44px; }
-#tab-teamlist .tl-field-card textarea.tl-description-field{ min-height: 100px; }
-#tab-teamlist .tl-field-card textarea.tl-teamlist-field{ min-height: 220px; }
-#tab-teamlist button.tl-copy{ background: var(--red); color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
-#tab-teamlist button.tl-copy:hover{ background: var(--red-dark); }
-#tab-teamlist button.tl-copy.tl-copied{ background: var(--green); }
-#tab-teamlist .tl-empty-state{ text-align: center; color: var(--muted); font-size: 14px; padding: 30px 0; }
-#tab-teamlist footer.tl-notes{ max-width: 900px; margin: 30px auto 0; padding: 16px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
-#tab-teamlist footer.tl-notes ul{ margin: 6px 0 0 18px; padding: 0; }
+/* Judiciary player cards */
+.jud-player-card{background:#fff;border:1.5px solid #e0e0e0;border-radius:10px;padding:14px 16px;margin-bottom:10px;transition:border-color .15s,background .15s;cursor:pointer}
+.jud-player-card.selected{border-color:#1a3d2b;background:#f0f7f3}
+.jud-player-card label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;width:100%}
+.jud-player-card input[type=checkbox]{width:18px;height:18px;accent-color:#1a3d2b;flex-shrink:0;margin-top:2px;cursor:pointer}
+.jud-player-card .jud-pc-name{font-weight:700;font-size:.88rem;color:#111;margin-bottom:3px}
+.jud-player-card .jud-pc-charge{font-size:.75rem;color:#444;margin-bottom:2px}
+.jud-player-card .jud-pc-pen{font-size:.72rem;color:#888;margin-bottom:8px}
+.jud-player-card .jud-pc-pos,.jud-pc-victim{width:100%;border:1.5px solid #e0e0e0;border-radius:7px;padding:6px 10px;font-size:.78rem;font-family:inherit;outline:none;transition:border-color .15s;margin-top:6px}
+.jud-player-card .jud-pc-pos:focus,.jud-player-card .jud-pc-victim:focus{border-color:#1a3d2b}
+.jud-player-card.selected .jud-pc-pos{border-color:#aac9b8}
+#judMain textarea:focus{border-color:var(--g)}
 
-#tab-teamlist .tl-article-head{ cursor: pointer; user-select: none; }
-#tab-teamlist .tl-article-head:hover{ background: var(--green-dark); }
-#tab-teamlist .tl-article-head .tl-source{ flex: 1; }
-#tab-teamlist .tl-chevron{ display: inline-block; transition: transform 0.15s; font-size: 11px; }
-#tab-teamlist .tl-article-group.tl-collapsed .tl-chevron{ transform: rotate(-90deg); }
-#tab-teamlist .tl-article-group.tl-collapsed .tl-article-body{ display: none; }
-#tab-teamlist .tl-preview-btn{ background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.45); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-weight: 600; }
-#tab-teamlist .tl-preview-btn:hover{ background: rgba(255,255,255,.28); }
-#tab-teamlist .tl-field-card textarea{ overflow: hidden; resize: none; }
-
-/* Preview modal — appended to <body> (not #tab-teamlist) so it can overlay
-   the whole page, so these rules deliberately are NOT scoped under #tab-teamlist. */
-.tl-preview-modal{ display: none; position: fixed; inset: 0; background: rgba(20,20,20,.6); z-index: 9999; align-items: center; justify-content: center; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-.tl-preview-modal.tl-open{ display: flex; }
-.tl-preview-modal-card{ background: #fffdf9; border-radius: 14px; max-width: 720px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.4); overflow: hidden; }
-.tl-preview-modal-header{ display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #00573f; color: #fff; font-weight: 600; font-size: 13px; flex-shrink: 0; }
-.tl-preview-modal-close{ background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; line-height: 1; padding: 4px 8px; }
-.tl-preview-modal-close:hover{ opacity: .7; }
-.tl-preview-modal-body{ padding: 24px 28px; overflow-y: auto; }
-.tl-preview-modal-body .tl-preview-title{ font-size: 21px; font-weight: 700; margin: 0 0 14px; color: #111; line-height: 1.3; }
-.tl-preview-modal-body h3{ font-size: 18px; font-weight: 700; margin: 20px 0 10px; color: #111; }
-.tl-preview-modal-body h3:first-child{ margin-top: 0; }
-.tl-preview-modal-body p{ font-size: 14px; line-height: 1.7; color: #222; margin: 0 0 14px; }
-.tl-preview-modal-body p:last-child{ margin-bottom: 0; }
-.tl-preview-modal-body strong{ font-weight: 700; }
-.tl-preview-modal-body a{ color: #00573f; }
-.tl-preview-modal-body hr{ border: none; border-top: 1px solid #ddd6cc; margin: 22px 0; }
-
-
+.tl-preview-modal{display:none;position:fixed;inset:0;background:rgba(20,20,20,.6);z-index:9999;align-items:center;justify-content:center;padding:24px}
+.tl-preview-modal.tl-open{display:flex}
+.tl-preview-modal-card{background:#fffdf9;border-radius:14px;max-width:720px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden}
+.tl-preview-modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#00573f;color:#fff;font-weight:600;font-size:13px;flex-shrink:0}
+.tl-preview-modal-close{background:none;border:none;color:#fff;font-size:16px;cursor:pointer;line-height:1;padding:4px 8px}
+.tl-preview-modal-close:hover{opacity:.7}
+.tl-preview-modal-body{padding:24px 28px;overflow-y:auto}
+.tl-preview-modal-body .tl-preview-title{font-size:21px;font-weight:700;margin:0 0 14px;color:#111;line-height:1.3}
+.tl-preview-modal-body h3{font-size:18px;font-weight:700;margin:20px 0 10px;color:#111}
+.tl-preview-modal-body h3:first-child{margin-top:0}
+.tl-preview-modal-body p{font-size:14px;line-height:1.7;color:#222;margin:0 0 14px}
+.tl-preview-modal-body strong{font-weight:700}
+.tl-preview-modal-body a{color:#00573f}
+#tab-teamlist .tl-dropzone{border:2px dashed var(--g);border-radius:12px;background:#fff;padding:36px 20px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
+#tab-teamlist .tl-dropzone.tl-dragover{background:#eaf5f1;border-color:#005035}
+#tab-teamlist .tl-dropzone h2{margin:0 0 6px 0;font-size:17px;color:#005035}
+#tab-teamlist .tl-dropzone p{margin:0;color:#888;font-size:13px}
+#tab-teamlist .tl-dropzone input[type="file"]{display:none}
+#tab-teamlist .tl-filelist{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+#tab-teamlist .tl-filechip{background:#fff;border:1px solid #ddd;border-radius:20px;padding:6px 12px;font-size:13px;display:flex;align-items:center;gap:8px}
+#tab-teamlist .tl-filechip button{border:none;background:none;color:#999;cursor:pointer;font-size:14px;line-height:1;padding:0}
+#tab-teamlist .tl-toolbar{display:flex;justify-content:space-between;align-items:center;margin:24px 0 12px;flex-wrap:wrap;gap:10px}
+#tab-teamlist .tl-toolbar h2{font-size:16px;margin:0;color:#005035}
+#tab-teamlist button.tl-secondary{background:none;color:#888;border:1px solid #ddd;border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer}
+#tab-teamlist .tl-warning{background:#fffbe6;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:13px;color:#7a5000;margin-bottom:14px}
+#tab-teamlist .tl-article-group{background:#fff;border:1px solid #e0e0e0;border-radius:12px;margin-bottom:26px;overflow:hidden}
+#tab-teamlist .tl-article-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--g);color:#fff;gap:10px;flex-wrap:wrap;cursor:pointer;user-select:none}
+#tab-teamlist .tl-article-head:hover{background:#005035}
+#tab-teamlist .tl-article-head .tl-source{font-size:13px;font-weight:600;flex:1}
+#tab-teamlist .tl-chevron{display:inline-block;transition:transform .15s;font-size:11px}
+#tab-teamlist .tl-article-body{padding:16px}
+#tab-teamlist .tl-field-card{border:1px solid #e0e0e0;border-radius:10px;margin-bottom:14px;overflow:hidden}
+#tab-teamlist .tl-field-card:last-child{margin-bottom:0}
+#tab-teamlist .tl-field-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#faf8f4;border-bottom:1px solid #e0e0e0;gap:10px}
+#tab-teamlist .tl-field-head .tl-label{font-size:13px;font-weight:600;color:#005035}
+#tab-teamlist .tl-field-card textarea{width:100%;border:none;resize:vertical;padding:14px 16px;font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13px;line-height:1.5;color:#111;display:block}
+#tab-teamlist .tl-field-card textarea.tl-title-field{min-height:44px}
+#tab-teamlist .tl-field-card textarea.tl-description-field{min-height:100px}
+#tab-teamlist .tl-field-card textarea.tl-teamlist-field{min-height:220px}
+#tab-teamlist button.tl-copy{background:#c8102e;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600}
+#tab-teamlist button.tl-copy.tl-copied{background:var(--g)}
+#tab-teamlist button.tl-preview-btn{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600}
+#tab-teamlist .tl-empty-state{text-align:center;color:#999;font-size:14px;padding:30px 0}
+#tab-teamlist footer.tl-notes{max-width:900px;margin:30px auto 0;padding:16px;font-size:12px;color:#888;border-top:1px solid #e0e0e0}
+#tab-teamlist footer.tl-notes ul{margin:6px 0 0 18px;padding:0}
 </style>
 </head>
 <body>
@@ -486,6 +473,10 @@ button{touch-action:manipulation}
     <button class="app-tab" onclick="switchTab('teamlist')" id="tab-btn-teamlist">
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v2a1 1 0 001 1h4a1 1 0 001-1V3M8 11h8M8 15h5"/></svg>
       Team List Tuesday
+    </button>
+    <button class="app-tab" onclick="switchTab('judiciary')" id="tab-btn-judiciary">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3v3M6 6l1.5 1.5M18 6l-1.5 1.5M9 12h6M7 18h10M5 12a7 7 0 0114 0"/></svg>
+      Judiciary Helper
     </button>
   </div>
 </header>
@@ -687,6 +678,8 @@ button{touch-action:manipulation}
     <button class="sp-dl-btn" id="spDlZip" onclick="spDownload('zip')">⬇ Download All (ZIP)</button>
     <button class="sp-dl-btn" id="spDlBtn" onclick="spDownload('jpg')" style="margin-top:6px;background:#2d5a3d;">⬇ Download All (Individual JPGs)</button>
   </div>
+  <!-- Judiciary Helper sidebar -->
+  
   <!-- Logo overlay sidebar -->
   <div class="pn ov-pn">
     <div class="pt">Logo</div>
@@ -761,6 +754,7 @@ button{touch-action:manipulation}
     <canvas id="spCanvas" style="display:none;width:100%;height:100%;border-radius:10px;cursor:grab"></canvas>
     <div id="spHint" style="display:none;position:absolute;bottom:14px;right:18px;font-size:.72rem;color:rgba(255,255,255,.5);pointer-events:none">Scroll to zoom · Drag to pan</div>
   </div>
+
 </div>
 
 <div class="modal" id="modal" onclick="closeModal(event)">
@@ -782,31 +776,26 @@ button{touch-action:manipulation}
 </div>
 </div>
 <div class="tab-panel" id="tab-teamlist">
-<header>
-  <h1>🐰 Team List Tuesday</h1>
-  <p>Drop in this week's Word docs. Get CMS-ready markdown out. Nothing else changes.</p>
+<header style="background:linear-gradient(135deg,#c8102e 0%,#900 100%);color:#fff;padding:28px 24px;text-align:center">
+  <h1 style="margin:0 0 6px 0;font-size:26px;letter-spacing:.3px">🐰 Team List Tuesday</h1>
+  <p style="margin:0;opacity:.9;font-size:14px">Drop in this week's Word docs. Get CMS-ready markdown out. Nothing else changes.</p>
 </header>
-
-<main>
+<main style="max-width:900px;margin:0 auto;padding:24px 16px 60px">
   <div class="tl-dropzone" id="tlDropzone">
     <h2>Drop team list Word docs here</h2>
     <p>or click to choose files — main squad, pathways, whatever you've got, all at once (.docx only)</p>
     <input type="file" id="tlFileInput" accept=".docx" multiple>
     <div class="tl-filelist" id="tlFileList"></div>
   </div>
-
   <div id="tlWarnings"></div>
-
-  <div id="tlToolbar" class="tl-toolbar" style="display:none;">
+  <div id="tlToolbar" class="tl-toolbar" style="display:none">
     <h2 id="tlTeamCount"></h2>
     <button class="tl-secondary" id="tlClearBtn">Start over</button>
   </div>
-
   <div id="tlResults"></div>
   <div id="tlEmptyState" class="tl-empty-state">No files loaded yet — drop this week's team list doc(s) above.</div>
 </main>
-
-<footer class="tl-notes">
+<footer class="tl-notes" style="max-width:900px;margin:30px auto 0;padding:16px;font-size:12px;color:#888;border-top:1px solid #e0e0e0">
   Formatting only — player names, numbers, order, captain markers and coach names are never changed, corrected or inferred.
   <ul>
     <li>Each Word doc becomes one article group: a Title field (📝 + headline), a Description field (the intro paragraph(s) before the first team), and a Team List field.</li>
@@ -818,6 +807,131 @@ button{touch-action:manipulation}
     <li>Everything runs in your browser — no files are uploaded anywhere.</li>
   </ul>
 </footer>
+</div>
+<div class="tab-panel" id="tab-judiciary">
+<header style="background:linear-gradient(135deg,#1a3d2b 0%,#0e2419 100%);color:#fff;padding:28px 24px;text-align:center">
+  <h1 style="margin:0 0 6px 0;font-size:26px;letter-spacing:.3px">⚖️ Judiciary Helper</h1>
+  <p style="margin:0;opacity:.85;font-size:14px">Upload an NRL Match Review Committee PDF to auto-generate a web article in markdown format.</p>
+</header>
+<main style="max-width:900px;margin:0 auto;padding:24px 16px 60px">
+
+  <!-- Drop zone -->
+  <div id="judDz" style="border:2px dashed #1a3d2b;border-radius:12px;background:#fff;padding:48px 24px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s;margin-bottom:20px" onclick="document.getElementById('judFi').click()" ondragover="event.preventDefault();this.style.background='#eaf5f1';this.style.borderColor='#0e2419'" ondragleave="this.style.background='#fff';this.style.borderColor='#1a3d2b'" ondrop="event.preventDefault();this.style.background='#fff';this.style.borderColor='#1a3d2b';judHandleFile(event.dataTransfer.files[0])">
+    <svg width="44" height="44" fill="none" stroke="#1a3d2b" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:12px;opacity:.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    <div style="font-size:17px;font-weight:700;color:#1a3d2b;margin-bottom:6px">Drop MRC PDF here</div>
+    <div style="font-size:13px;color:#888">or click to choose — NRL Match Review Committee charges or results report</div>
+    <input type="file" id="judFi" accept=".pdf" style="display:none" onchange="judHandleFile(this.files[0])">
+  </div>
+
+  <div id="judStatus" style="text-align:center;font-size:13px;color:#666;min-height:18px;margin-bottom:12px"></div>
+
+  <!-- Match context (hidden until PDF loaded) -->
+  <div id="judMeta" style="display:none;background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:18px 20px;margin-bottom:20px">
+    <div style="font-size:12px;font-weight:700;color:#1a3d2b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Match Details</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Round</div>
+        <input id="judRound" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:14px;outline:none;font-family:inherit" placeholder="18" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Year</div>
+        <input id="judYear" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:14px;outline:none;font-family:inherit" placeholder="2026" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Opponent</div>
+        <select id="judOpponent" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:14px;outline:none;font-family:inherit;background:#fff;color:#222" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+          <option value="">— select —</option>
+          <option>Broncos</option><option>Raiders</option><option>Bulldogs</option>
+          <option>Sharks</option><option>Titans</option><option>Sea Eagles</option>
+          <option>Storm</option><option>Knights</option><option>Cowboys</option>
+          <option>Eels</option><option>Panthers</option><option>Rabbitohs</option>
+          <option>Dragons</option><option>Roosters</option><option>Warriors</option>
+          <option>Dolphins</option><option>Tigers</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player list (hidden until PDF loaded) -->
+  <div id="judPlayerSection" style="display:none;margin-bottom:20px">
+    <div style="font-size:12px;font-weight:700;color:#1a3d2b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Players Found — select who to write about</div>
+    <div id="judPlayerList"></div>
+    <button onclick="judGenerate()" style="width:100%;margin-top:14px;padding:14px;background:#1a3d2b;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:background .15s" onmouseover="this.style.background='#0e2419'" onmouseout="this.style.background='#1a3d2b'">Generate Article</button>
+    <button onclick="judClear()" style="width:100%;margin-top:8px;padding:10px;background:none;color:#888;border:1.5px solid #e0e0e0;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Start Over</button>
+  </div>
+
+  <!-- Output (hidden until generated) -->
+  <div id="judOutSection" style="display:none">
+    <div id="judArticleGroup" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+      <!-- Title field -->
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1a3d2b;color:#fff;gap:10px">
+          <span style="font-size:13px;font-weight:600">📰 Article Title</span>
+          <button id="judCopyTitleBtn" onclick="judCopyTitle()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;font-weight:600;font-family:inherit">Copy</button>
+        </div>
+        <textarea id="judOutTitle" readonly spellcheck="false" style="width:100%;border:none;resize:none;padding:14px 16px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:#111;min-height:60px;display:block"></textarea>
+      </div>
+      <!-- Body field -->
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1a3d2b;color:#fff;gap:10px">
+          <span style="font-size:13px;font-weight:600">📰 Article Body</span>
+          <button id="judCopyBtn" onclick="judCopy()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;font-weight:600;font-family:inherit">Copy</button>
+        </div>
+        <textarea id="judOut" readonly spellcheck="false" style="width:100%;border:none;resize:vertical;padding:14px 16px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:#111;min-height:200px;display:block" placeholder="Article body will appear here…"></textarea>
+      </div>
+    </div>
+
+    <!-- Add Update -->
+    <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden">
+      <div style="padding:14px 18px;background:#f5f5f2;border-bottom:1px solid #e0e0e0">
+        <span style="font-size:13px;font-weight:700;color:#1a3d2b">Add Update</span>
+        <span style="font-size:12px;color:#888;margin-left:8px">Append a plea outcome or judiciary result</span>
+      </div>
+      <div style="padding:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Update Type</div>
+            <select id="judUpdType" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:#fff">
+              <option value="suspension">Accepted suspension</option>
+              <option value="fine">Accepted fine</option>
+              <option value="contesting">Contesting charge</option>
+              <option value="guilty_panel">Found guilty at judiciary</option>
+              <option value="not_guilty">Not guilty at judiciary</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Date</div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="judUpdDatePicker" type="date" style="flex:1;border:1.5px solid #e0e0e0;border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;color:#222" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'" onchange="(function(){const v=document.getElementById('judUpdDatePicker').value;if(!v)return;const d=new Date(v+'T00:00:00');const months=['January','February','March','April','May','June','July','August','September','October','November','December'];document.getElementById('judUpdDate').value=d.getDate()+' '+months[d.getMonth()];})()">
+              <button type="button" onclick="(function(){const d=new Date();const pad=n=>String(n).padStart(2,'0');const iso=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());document.getElementById('judUpdDatePicker').value=iso;const months=['January','February','March','April','May','June','July','August','September','October','November','December'];document.getElementById('judUpdDate').value=d.getDate()+' '+months[d.getMonth()];})()" style="white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:600;font-family:inherit;background:#1a3d2b;color:#fff;border:none;border-radius:8px;cursor:pointer">Today</button>
+              <input id="judUpdDate" type="hidden">
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Player Surname</div>
+            <input id="judUpdSurname" placeholder="e.g. Dodd" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Matches (if suspended)</div>
+            <input id="judUpdMatches" type="number" min="0" placeholder="1" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Fine (if applicable)</div>
+            <input id="judUpdFine" placeholder="$1,800" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+          </div>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Next Opponent (optional)</div>
+          <input id="judUpdNextOpp" placeholder="e.g. Broncos" style="width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1a3d2b'" onblur="this.style.borderColor='#e0e0e0'">
+        </div>
+        <button onclick="judAddUpdate()" style="width:100%;padding:11px;background:#1a3d2b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">+ Append Update to Article</button>
+      </div>
+    </div>
+  </div>
+
+</main>
 </div>
 <div class="tab-panel" id="tab-video">
 <div style="max-width:700px;margin:40px auto;padding:0 24px;">
@@ -1993,14 +2107,14 @@ let spImg=null,spFile=null,spPanels=2,spSize='portrait';
 let spScale=1,spOffX=0,spOffY=0,spDragging=false,spDragSX=0,spDragSY=0,spDragOX=0,spDragOY=0,spRot=0,spPinchDist=0,spPinchScale=1;
 
 function setMode(m){
-  const isOv=m==='overlay';
+  const isOv=m==='overlay',isSp=m==='splitter';
   document.getElementById('mt-overlay').classList.toggle('active',isOv);
-  document.getElementById('mt-splitter').classList.toggle('active',!isOv);
-  document.getElementById('spPanel').classList.toggle('vis',!isOv);
+  document.getElementById('mt-splitter').classList.toggle('active',isSp);
+  document.getElementById('spPanel').classList.toggle('vis',isSp);
   document.querySelectorAll('.ov-pn').forEach(p=>p.style.display=isOv?'':'none');
   document.getElementById('overlayMain').style.display=isOv?'':'none';
-  document.getElementById('spMain').classList.toggle('vis',!isOv);
-  if(!isOv&&spImg) setTimeout(spFitCanvas,50);
+  document.getElementById('spMain').classList.toggle('vis',isSp);
+  if(isSp&&spImg) setTimeout(spFitCanvas,50);
 }
 
 function spSetPanels(n){
@@ -2245,8 +2359,231 @@ _spMain.addEventListener('drop',e=>{e.preventDefault();spLoad(e.dataTransfer.fil
 
 buildUI();
 preload().then(()=>loadFA());
-</script>
-<script>
+
+// ── Judiciary Helper ─────────────────────────────────────────────────────────
+let judPlayers=[];
+const JUD_NUMS=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+function judNumWord(n){n=parseInt(n)||0;return n>=0&&n<JUD_NUMS.length?JUD_NUMS[n]:String(n);}
+function judFlipName(raw){const p=raw.trim().split(/\s+/);return p.length<2?raw:p.slice(1).join(' ')+' '+p[0];}
+function judFormatCharge(charge){const m=charge.match(/^(.+?)\s+-\s+(.+)$/);return m?m[2].trim()+' '+m[1].trim():charge;}
+
+
+
+async function judHandleFile(file){
+  if(!file)return;
+  const st=document.getElementById('judStatus');
+  st.textContent='Parsing PDF…';
+  try{
+    if(typeof pdfjsLib==='undefined') throw new Error('PDF.js library not loaded. Check your internet connection and try again.');
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const ab=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+    const items=[];
+    for(let pg=1;pg<=pdf.numPages;pg++){
+      const page=await pdf.getPage(pg);
+      const vp=page.getViewport({scale:1});
+      const tc=await page.getTextContent();
+      tc.items.forEach(it=>{const s=it.str.trim();if(s)items.push({str:s,x:it.transform[4],y:vp.height-it.transform[5]});});
+    }
+    judProcessItems(items);
+  }catch(e){console.error(e);document.getElementById('judStatus').textContent='Error: '+e.message;}
+}
+
+function judProcessItems(items){
+  const TOL=5;
+  const map={};
+  items.forEach(it=>{const k=Math.round(it.y/TOL)*TOL;if(!map[k])map[k]=[];map[k].push(it);});
+  const rows=Object.entries(map).sort(([a],[b])=>+a-+b).map(([,its])=>its.sort((a,b)=>a.x-b.x).map(i=>i.str));
+  const full=rows.map(r=>r.join(' ')).join('\n');
+  const isCharges=(()=>{
+    if(/\bPLEA\b|\bMISCONDUCT\b/i.test(full))return true;
+    // Fallback: charges rows have TWO separate "N match(es)" penalty values (early plea + guilty at panel)
+    return dataRows.some(r=>{
+      let hits=0;
+      for(let i=0;i<r.length-1;i++){if(/^\d+$/.test(r[i])&&/^matches?$/i.test(r[i+1]))hits++;};
+      return hits>=2;
+    });
+  })();
+  const rndM=full.match(/Round\s+(\d+)/i);
+  if(rndM) document.getElementById('judRound').value=rndM[1];
+  const dateRx=/^\d{1,2}\/\d{2}\/\d{4}$/;
+  const dataRows=rows.filter(r=>r.some(t=>dateRx.test(t)));
+  const allPlayers=dataRows.map(r=>judParseRow(r,isCharges?'charges':'results')).filter(Boolean);
+  judPlayers=allPlayers.filter(p=>p.isRab);
+  // Auto-fill opponent from non-Rabbitohs clubs found in this PDF
+  const awayClubs=[...new Set(allPlayers.filter(p=>!p.isRab).map(p=>p.club))];
+  if(awayClubs.length===1){
+    const sel=document.getElementById('judOpponent');
+    const opt=[...sel.options].find(o=>o.value.toLowerCase()===awayClubs[0].toLowerCase()||awayClubs[0].toLowerCase().includes(o.value.toLowerCase())||o.value.toLowerCase().includes(awayClubs[0].toLowerCase()));
+    if(opt)sel.value=opt.value;
+  }
+  if(judPlayers.length){const yr=judPlayers[0].date.split('/')[2];if(yr)document.getElementById('judYear').value=yr;}
+  document.getElementById('judMeta').style.display='';
+  judRenderPlayers();
+  document.getElementById('judStatus').textContent=judPlayers.length?'Found '+judPlayers.length+' player(s) — tick those you\'re writing about.':'No player rows found. Check the PDF is an MRC report.';
+}
+
+function judReadPenalty(toks,i){
+  if(i>=toks.length)return['',0];
+  const t=toks[i];
+  if(/^\$[\d,]+$/.test(t))return[t,1];
+  if(/^\d+ match(?:es)?$/i.test(t))return[t,1];
+  if(/^\d+$/.test(t)){if(i+1<toks.length&&/^matches?$/i.test(toks[i+1]))return[t+' '+toks[i+1],2];const n=parseInt(t);return[t+(n===1?' match':' matches'),1];}
+  return[t,1];
+}
+
+function judParseRow(toks,fmt){
+  const dateRx=/^\d{1,2}\/\d{2}\/\d{4}$/;
+  const di=toks.findIndex(t=>dateRx.test(t));if(di<0)return null;
+  const nameParts=toks.slice(0,di).join(' ').trim().split(/\s+/);
+  const surname=nameParts[0]||'';const firstName=nameParts.slice(1).join(' ');if(!surname)return null;
+  const date=toks[di];let i=di+1;
+  let round='';if(i<toks.length&&/^\d+$/.test(toks[i]))round=toks[i++];
+  let club='';
+  const TW_FIRST=['Sea','Wests','New','Gold','North','St'];
+  if(i<toks.length&&TW_FIRST.includes(toks[i])&&i+1<toks.length){club=toks[i]+' '+toks[i+1];i+=2;}else{club=toks[i]||'';i++;}
+  let minute='';while(i<toks.length&&!/(st|nd|rd|th)$/i.test(toks[i]))i++;if(i<toks.length){minute=toks[i];i++;}
+  const chargeT=[];while(i<toks.length&&!/^[1-4]$/.test(toks[i]))chargeT.push(toks[i++]);
+  const charge=chargeT.join(' ').replace(/\s+-\s+/g,' - ').trim();
+  let grade='';if(i<toks.length&&/^[1-4]$/.test(toks[i]))grade=toks[i++];
+  const isRab=/rabbitoh|south.?sydney/i.test(club);
+  if(fmt==='charges'){
+    if(i<toks.length&&/^(yes|no)$/i.test(toks[i]))i++;
+    const recT=[];while(i<toks.length&&!/^\$/.test(toks[i])&&!/^\d+$/.test(toks[i])&&!/^\d+ match(?:es)?$/i.test(toks[i]))recT.push(toks[i++]);
+    const record=recT.join(' ');
+    const[earlyPlea,s1]=judReadPenalty(toks,i);i+=s1;
+    const[guiltyPanel,s2]=judReadPenalty(toks,i);i+=s2;
+    const victim=judFlipName(toks.slice(i).join(' ').trim());
+    return{surname,firstName,date,round,club,minute,charge,grade,record,earlyPlea,guiltyPanel,victim,isRab,fmt:'charges',position:''};
+  }else{
+    const resT=[];while(i<toks.length&&!/^\d+(st|nd|rd|th)$/i.test(toks[i])&&!/^No$/i.test(toks[i]))resT.push(toks[i++]);
+    const result=resT.join(' ').replace(/\s+-\s+/g,' - ').trim();
+    const recT=[];while(i<toks.length&&!/^\d+$/.test(toks[i])&&!/^\$/.test(toks[i]))recT.push(toks[i++]);
+    const record=recT.join(' ');
+    let matchesToServe='0';if(i<toks.length&&/^\d+$/.test(toks[i]))matchesToServe=toks[i++];
+    let fine='$0';if(i<toks.length&&/^\$/.test(toks[i])){fine=toks[i];i++;}
+    const victim=judFlipName(toks.slice(i).join(' ').trim());
+    return{surname,firstName,date,round,club,minute,charge,grade,record,result,matchesToServe,fine,victim,isRab,fmt:'results',position:''};
+  }
+}
+
+function judRenderPlayers(){
+  const list=document.getElementById('judPlayerList');
+  list.innerHTML='';
+  judPlayers.forEach((p,idx)=>{
+    const card=document.createElement('div');
+    card.className='jud-player-card'+(p.isRab?' selected':'');
+    card.dataset.idx=idx;
+    const ep=p.fmt==='charges'?'Early plea: '+p.earlyPlea+' · Guilty at panel: '+p.guiltyPanel:'Result: '+p.result+' · Serves: '+p.matchesToServe+' · Fine: '+p.fine;
+    card.innerHTML=
+      '<label><input type="checkbox" class="jud-cb"'+(p.isRab?' checked':'')+'>'+
+      '<div style="flex:1">'+
+        '<div class="jud-pc-name">'+p.firstName+' '+p.surname+' <span style="font-weight:400;color:#666;font-size:.78rem">('+p.club+')</span></div>'+
+        '<div class="jud-pc-charge">'+judFormatCharge(p.charge)+' – Grade '+p.grade+'&nbsp;&nbsp;·&nbsp;&nbsp;'+p.minute+' minute&nbsp;&nbsp;·&nbsp;&nbsp;vs '+p.victim+'</div>'+
+        '<div class="jud-pc-pen">'+ep+'</div>'+
+        (p.isRab?'<input class="jud-pc-pos" placeholder="Position (e.g. halfback, prop, hooker…)" value="'+(p.position||'')+'"><input class="jud-pc-victim" placeholder="Victim player name (e.g. Jack Cogger)" value="'+(p.victim||'')+'">':'')+'</div></label>';
+    const cb=card.querySelector('.jud-cb');
+    if(cb)cb.addEventListener('change',()=>{card.classList.toggle('selected',cb.checked);});
+    list.appendChild(card);
+  });
+  document.getElementById('judPlayerSection').style.display='';
+}
+
+function judGetSelected(){
+  return[...document.querySelectorAll('.jud-player-card')].map(card=>{
+    const cb=card.querySelector('.jud-cb');
+    if(!cb||!cb.checked)return null;
+    const idx=parseInt(card.dataset.idx);
+    const pos=(card.querySelector('.jud-pc-pos')?.value||'').trim();
+    const vic=(card.querySelector('.jud-pc-victim')?.value||'').trim();
+    return{...judPlayers[idx],position:pos,victim:vic||judPlayers[idx].victim};
+  }).filter(Boolean);
+}
+
+function judGenerate(){
+  const sel=judGetSelected();
+  if(!sel.length){alert('Tick at least one player.');return;}
+  const round=document.getElementById('judRound').value.trim();
+  const year=document.getElementById('judYear').value.trim();
+  const opp=document.getElementById('judOpponent').value.trim();
+  const oppStr=opp?' against the '+opp:'';
+  let title;
+  if(sel.length===1)title='Judiciary Update: '+sel[0].firstName+' '+sel[0].surname+' Charged Following Round '+round+', '+year;
+  else if(sel.length===2)title='Judiciary Update: '+sel[0].firstName+' '+sel[0].surname+' and '+sel[1].firstName+' '+sel[1].surname+' Charged Following Round '+round+', '+year;
+  else title='Judiciary Update: Rabbitohs Players Charged Following Round '+round+', '+year;
+  let opening;
+  if(sel.length===1){const p=sel[0];opening='Rabbitohs '+(p.position||'player')+', '+p.firstName+' '+p.surname+', has been charged by the Match Review Committee following our round '+round+' match of the '+year+' season'+oppStr+'.';}
+  else{const parts=sel.map(p=>(p.position||'player')+', '+p.firstName+' '+p.surname);const last=parts.pop();opening='Rabbitohs '+parts.join(', ')+', and '+last+', have been charged by the Match Review Committee following our round '+round+' match of the '+year+' season'+oppStr+'.';}
+  const paras=sel.map(p=>{
+    const charge=judFormatCharge(p.charge);
+    const victimRef=p.victim?(opp?opp+' player '+p.victim:p.victim):(opp?opp+' player':'');
+    const s1=p.surname+' was cited for '+charge+' – Grade '+p.grade+(victimRef?' on '+victimRef:'')+ ' in the '+p.minute+' minute.';
+    let s2='';
+    const ep=(p.earlyPlea||'').trim(),gp=(p.guiltyPanel||'').trim();
+    if(/match/i.test(ep)){const en=parseInt(ep)||0,gn=parseInt(gp)||0;s2='He faces a '+judNumWord(en)+'-match suspension with an early guilty plea or a '+judNumWord(gn)+'-match suspension if he contests the charge at the judiciary and is unsuccessful.';}
+    else if(/^\$/.test(ep)){s2='With an early guilty plea, he will receive a fine of '+ep+', or face a '+gp+' fine if found guilty at the judiciary.';}
+    else if(ep){s2='He faces '+ep+' with an early guilty plea or '+gp+' if found guilty at the judiciary.';}
+    return s1+(s2?' '+s2:'');
+  });
+  const body=opening+'\n\n'+paras.join('\n\n');
+  const taTitle=document.getElementById('judOutTitle');
+  const ta=document.getElementById('judOut');
+  taTitle.value='📰 '+title;
+  taTitle.style.height='auto';taTitle.style.height=(taTitle.scrollHeight+2)+'px';
+  ta.value=body;
+  ta.style.height='auto';ta.style.height=(ta.scrollHeight+2)+'px';
+  document.getElementById('judOutSection').style.display='';
+  document.getElementById('judOutSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function judAddUpdate(){
+  const type=document.getElementById('judUpdType').value;
+  const date=document.getElementById('judUpdDate').value.trim();
+  const surname=document.getElementById('judUpdSurname').value.trim();
+  const matches=parseInt(document.getElementById('judUpdMatches').value)||0;
+  const fine=document.getElementById('judUpdFine').value.trim();
+  const nextOpp=document.getElementById('judUpdNextOpp').value.trim();
+  const oppStr=nextOpp?', ruling him out of our next clash against the '+nextOpp:'';
+  const prefix='**Update – '+date+':** '+surname;
+  let update='';
+  if(type==='suspension')update=prefix+' has accepted the early guilty plea and will serve a '+judNumWord(matches)+'-match suspension'+oppStr+'.';
+  else if(type==='fine')update=prefix+' has accepted the early guilty plea and will be fined '+fine+'.';
+  else if(type==='contesting')update=prefix+' has elected to contest the charge and will appear before the judiciary.';
+  else if(type==='guilty_panel')update=prefix+' was found guilty at the judiciary and will serve a '+judNumWord(matches)+'-match suspension'+oppStr+'.';
+  else if(type==='not_guilty')update=prefix+' was found not guilty at the judiciary and is free to play.';
+  if(update){const ta=document.getElementById('judOut');ta.value=ta.value.trimEnd()+'\n\n'+update;ta.style.height='auto';ta.style.height=(ta.scrollHeight+2)+'px';}
+}
+
+function judCopyTitle(){
+  navigator.clipboard.writeText(document.getElementById('judOutTitle').value).then(()=>{
+    const btn=document.getElementById('judCopyTitleBtn');btn.textContent='✓ Copied!';
+    setTimeout(()=>{btn.textContent='Copy';},1600);
+  });
+}
+function judCopy(){
+  navigator.clipboard.writeText(document.getElementById('judOut').value).then(()=>{
+    const btn=document.getElementById('judCopyBtn');btn.textContent='✓ Copied!';
+    setTimeout(()=>{btn.textContent='Copy';},1600);
+  });
+}
+
+function judClear(){
+  judPlayers=[];
+  document.getElementById('judStatus').textContent='';
+  document.getElementById('judFi').value='';
+  document.getElementById('judMeta').style.display='none';
+  document.getElementById('judPlayerSection').style.display='none';
+  document.getElementById('judPlayerList').innerHTML='';
+  document.getElementById('judOutSection').style.display='none';
+  document.getElementById('judRound').value='';
+  document.getElementById('judYear').value='';
+  document.getElementById('judOpponent').value='';
+  document.getElementById('judOutTitle').value='';
+  document.getElementById('judOut').value='';
+}
+// ── End Judiciary Helper ──────────────────────────────────────────────────────
+
+
 (function(){
 const WNS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const headingRe = /^The\b.*\bis:$/i;
