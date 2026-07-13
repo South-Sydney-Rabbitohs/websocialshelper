@@ -883,7 +883,9 @@ button{touch-action:manipulation}
       </div>
     </div>
 
-    <!-- Add Update -->
+  </div>
+
+  <!-- Add Update always visible -->
     <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden">
       <div style="padding:14px 18px;background:#f5f5f2;border-bottom:1px solid #e0e0e0">
         <span style="font-size:13px;font-weight:700;color:#1a3d2b">Add Update</span>
@@ -2407,7 +2409,19 @@ function judProcessItems(items){
     });
   })();
   const rndM=full.match(/Round\s+(\d+)/i);
-  if(rndM) document.getElementById('judRound').value=rndM[1];
+  if(rndM){
+    const rn=rndM[1];
+    document.getElementById('judRound').value=rn;
+    const yr=document.getElementById('judYear');
+    // Auto-fill opponent from 2026 draw when year is 2026
+    setTimeout(()=>{
+      if((yr.value||'').trim()==='2026'){
+        const draw={1:'Dolphins',2:'Roosters',3:'Wests Tigers',5:'Bulldogs',6:'Raiders',7:'Dragons',8:'Storm',9:'Knights',10:'Sharks',11:'Dolphins',12:'Cowboys',14:'Sea Eagles',15:'Broncos',17:'Eels',18:'Panthers',19:'Knights',20:'Raiders',21:'Storm',22:'Sharks',23:'Eels',24:'Bulldogs',25:'Warriors',26:'Titans',27:'Roosters'};
+        const opp=draw[parseInt(rn)];
+        if(opp){const sel=document.getElementById('judOpponent');const opt=[...sel.options].find(o=>o.value===opp||o.textContent.trim()===opp);if(opt)sel.value=opt.value;}
+      }
+    },50);
+  }
   const dateRx=/^\d{1,2}\/\d{2}\/\d{4}$/;
   const dataRows=rows.filter(r=>r.some(t=>dateRx.test(t)));
   const allPlayers=dataRows.map(r=>judParseRow(r,isCharges?'charges':'results')).filter(Boolean);
@@ -2483,7 +2497,7 @@ function judRenderPlayers(){
         '<div class="jud-pc-name">'+p.firstName+' '+p.surname+' <span style="font-weight:400;color:#666;font-size:.78rem">('+p.club+')</span></div>'+
         '<div class="jud-pc-charge">'+judFormatCharge(p.charge)+' – Grade '+p.grade+'&nbsp;&nbsp;·&nbsp;&nbsp;'+p.minute+' minute&nbsp;&nbsp;·&nbsp;&nbsp;vs '+p.victim+'</div>'+
         '<div class="jud-pc-pen">'+ep+'</div>'+
-        (p.isRab?'<input class="jud-pc-pos" placeholder="Position (e.g. halfback, prop, hooker…)" value="'+(p.position||'')+'"><input class="jud-pc-victim" placeholder="Victim player name (e.g. Jack Cogger)" value="'+(p.victim||'')+'">':'')+'</div></label>';
+        (p.isRab?'<select class="jud-pc-pos"><option value="">Position…</option><option>fullback</option><option>wing</option><option>centre</option><option>five-eighth</option><option>halfback</option><option>prop</option><option>second rower</option><option>lock</option></select><input class="jud-pc-victim" placeholder="Victim player name (e.g. Jack Cogger)" value="'+(p.victim||'')+'">':'')+'</div></label>';
     const cb=card.querySelector('.jud-cb');
     if(cb)cb.addEventListener('change',()=>{card.classList.toggle('selected',cb.checked);});
     list.appendChild(card);
