@@ -2719,7 +2719,8 @@ async function parseDocxToParagraphs(file) {
   const paraNodes = xmlDoc.getElementsByTagNameNS(WNS, 'p');
   const paragraphs = [];
   for (const p of paraNodes) {
-    paragraphs.push(paragraphTextWithLinks(p, relsMap).trim());
+    const isList = p.getElementsByTagNameNS(WNS, 'numPr').length > 0;
+    paragraphs.push({text: paragraphTextWithLinks(p, relsMap).trim(), isList});
   }
   return paragraphs;
 }
@@ -2731,7 +2732,7 @@ function extractTeams(paragraphs) {
   let counter = 0;
 
   for (const raw of paragraphs) {
-    const text = raw.trim();
+    const text = (raw.text !== undefined ? raw.text : raw).trim();
     if (!text) continue;
 
     if (headingRe.test(text)) {
@@ -2788,11 +2789,13 @@ function extractArticle(paragraphs) {
   const description = [];
   let i = 0;
   for (; i < paragraphs.length; i++) {
-    const text = paragraphs[i].trim();
+    const {text: raw, isList} = paragraphs[i];
+    const text = raw.trim();
     if (!text) continue;
     if (releaseLineRe.test(text)) continue;
     if (headingRe.test(text)) break;
     if (title === null) { title = text; continue; }
+    if (isList) continue; // skip secondary bullet headings
     description.push(text);
   }
   const teams = extractTeams(paragraphs.slice(i));
@@ -2821,6 +2824,101 @@ function copyText(text, btn) {
       btn.classList.remove('tl-copied');
     }, 1400);
   });
+}
+
+function extractRoundOpponent(title) {
+  const roundM = title && title.match(/Round\s+(\d+)/i);
+  const round = roundM ? roundM[1] : '';
+  const oppM = title && title.match(/Against\s+(?:the\s+)?(.+?)(?:\s*[-–|]|$)/i);
+  const opp = oppM ? oppM[1].trim() : '';
+  return { round, opp };
+}
+
+function titleToSlug(title) {
+  if (!title) return '';
+  return title.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
+function buildBrazeCard(entry) {
+  const {round, opp} = extractRoundOpponent(entry.title || '');
+  const preheader = entry.description[0] || '';
+  const pushMsg = round && opp ? `Check out our squad for Round ${round} against the ${opp}.` : '';
+  const emailSubjectMembers = round && opp ? `Members First | Team List for Round ${round} vs ${opp}` : '';
+  const emailSubjectNonMembers = round && opp ? `Team List for Round ${round} vs ${opp}` : '';
+  const slug = titleToSlug((entry.title || '').replace(/^📝\s*/, ''));
+  const webUrl = slug ? `https://www.rabbitohs.com.au/news/-${slug}` : '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'tl-field-card tl-braze-card';
+  wrap.style.cssText = 'border-top:3px solid #1a3d2b;margin-top:8px';
+
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-size:11px;font-weight:700;color:#1a3d2b;text-transform:uppercase;letter-spacing:.06em;padding:10px 14px 6px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:6px';
+  hdr.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Braze — Push &amp; EDM';
+  wrap.appendChild(hdr);
+
+  const body = document.createElement('div');
+  body.style.cssText = 'padding:12px 14px;display:flex;flex-direction:column;gap:10px';
+
+  // Article ID input
+  const idRow = document.createElement('div');
+  idRow.style.cssText = 'display:flex;align-items:center;gap:8px;background:#f5f7f5;border-radius:6px;padding:8px 10px';
+  idRow.innerHTML = '<span style="font-size:11px;font-weight:600;color:#555;white-space:nowrap">Article ID (cmsArticleId)</span>';
+  const idInput = document.createElement('input');
+  idInput.type = 'text';
+  idInput.placeholder = '4-digit ID';
+  idInput.maxLength = 8;
+  idInput.style.cssText = 'flex:1;border:1.5px solid #d0d0d0;border-radius:5px;padding:5px 8px;font-size:13px;font-family:inherit;outline:none;width:100px';
+  idRow.appendChild(idInput);
+  body.appendChild(idRow);
+
+  function makeRow(label, value, isEditable) {
+    const row = document.createElement('div');
+    row.className = 'tl-field-card';
+    row.style.cssText = 'margin:0;border:1px solid #e8e8e8;border-radius:8px;overflow:hidden';
+    const head = document.createElement('div');
+    head.className = 'tl-field-head';
+    head.style.cssText = 'padding:6px 10px;background:#fafafa';
+    const lbl = document.createElement('span');
+    lbl.className = 'tl-label';
+    lbl.textContent = label;
+    const btn = document.createElement('button');
+    btn.className = 'tl-copy';
+    btn.textContent = 'Copy';
+    head.appendChild(lbl);
+    head.appendChild(btn);
+    const ta = document.createElement('textarea');
+    ta.value = value;
+    ta.readOnly = !isEditable;
+    ta.rows = 1;
+    ta.style.cssText = 'width:100%;border:none;padding:7px 10px;font-size:12.5px;font-family:inherit;resize:none;background:#fff;color:#222;outline:none';
+    ta.addEventListener('input', () => { ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; });
+    btn.addEventListener('click', () => copyText(ta.value, btn));
+    row.appendChild(head);
+    row.appendChild(ta);
+    setTimeout(() => { ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; }, 0);
+    return {row, ta};
+  }
+
+  const {row: pushMsgRow, ta: pushMsgTa} = makeRow('Push — Message', pushMsg);
+  const {row: iosRow, ta: iosTa} = makeRow('Push — iOS & Android Deeplink', 'rabbitohs://news?cmsArticleId=');
+  const {row: webRow, ta: webTa} = makeRow('Push — Web URL', webUrl, true);
+  const {row: subjMembersRow, ta: subjMembersTa} = makeRow('EDM — Subject (Members)', emailSubjectMembers, true);
+  const {row: subjNonMembersRow, ta: subjNonMembersTa} = makeRow('EDM — Subject (Non-Members)', emailSubjectNonMembers, true);
+  const {row: preRow, ta: preTa} = makeRow('EDM — Preheader', preheader);
+
+  idInput.addEventListener('input', () => {
+    const id = idInput.value.trim();
+    iosTa.value = `rabbitohs://news?cmsArticleId=${id}`;
+    iosTa.dispatchEvent(new Event('input'));
+  });
+
+  [pushMsgRow, iosRow, webRow, subjMembersRow, subjNonMembersRow, preRow].forEach(r => body.appendChild(r));
+  wrap.appendChild(body);
+  return wrap;
 }
 
 function render() {
@@ -2894,6 +2992,7 @@ function render() {
       teamListField(entry),
       'tl-teamlist-field'
     ));
+    body.appendChild(buildBrazeCard(entry));
 
     const previewBtn = head.querySelector('.tl-preview-btn');
     previewBtn.addEventListener('click', (e) => {
