@@ -1018,17 +1018,17 @@ button{touch-action:manipulation}
       <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Article Copy
     </div>
-    <div class="sq-field">
+    <div class="sq-field" style="margin-bottom:14px">
       <div class="sq-field-head"><span class="sq-label">Title</span><button class="sq-copy" onclick="sqCopy('sqTitle',this)">Copy</button></div>
-      <textarea id="sqTitle" class="sq-field" rows="1" style="border:none;resize:none;padding:11px 13px;font-family:inherit;font-size:14px;font-weight:600;width:100%;outline:none"></textarea>
+      <textarea id="sqTitle" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:inherit;font-size:14px;font-weight:600;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
     </div>
-    <div class="sq-field">
+    <div class="sq-field" style="margin-bottom:14px">
       <div class="sq-field-head"><span class="sq-label">Intro Paragraph</span><button class="sq-copy" onclick="sqCopy('sqIntro',this)">Copy</button></div>
-      <textarea id="sqIntro" class="sq-field" rows="3" style="border:none;resize:none;padding:11px 13px;font-family:inherit;font-size:13px;line-height:1.6;width:100%;outline:none"></textarea>
+      <textarea id="sqIntro" rows="3" style="border:none;resize:none;padding:13px 14px;font-family:inherit;font-size:13px;line-height:1.65;width:100%;outline:none;min-height:70px"></textarea>
     </div>
     <div class="sq-field">
       <div class="sq-field-head"><span class="sq-label">Squad Heading</span><button class="sq-copy" onclick="sqCopy('sqHeading',this)">Copy</button></div>
-      <textarea id="sqHeading" class="sq-field" rows="1" style="border:none;resize:none;padding:11px 13px;font-family:inherit;font-size:13px;width:100%;outline:none"></textarea>
+      <textarea id="sqHeading" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:inherit;font-size:13px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
     </div>
   </div>
 
@@ -1075,6 +1075,53 @@ button{touch-action:manipulation}
     <div class="sq-field">
       <div class="sq-field-head"><span class="sq-label">Ready to paste into CMS</span><button class="sq-copy" onclick="sqCopy('sqFullOut',this)">Copy</button></div>
       <textarea id="sqFullOut" class="sq-field" style="border:none;resize:vertical;padding:11px 13px;font-family:'SFMono-Regular',Consolas,monospace;font-size:13px;line-height:1.55;min-height:400px;width:100%;outline:none"></textarea>
+    </div>
+  </div>
+
+  <!-- Braze push notification card -->
+  <div class="sq-card" id="sqBrazeCard" style="display:none">
+    <div class="sq-card-title">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      App Push Notification (Braze)
+    </div>
+
+    <div class="sq-field" style="margin-bottom:14px">
+      <div class="sq-field-head"><span class="sq-label">Push — Title</span><button class="sq-copy" onclick="sqCopy('sqPushTitle',this)">Copy</button></div>
+      <textarea id="sqPushTitle" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:inherit;font-size:14px;font-weight:600;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
+    </div>
+
+    <div class="sq-field" style="margin-bottom:10px">
+      <div class="sq-field-head"><span class="sq-label">Push — Message options</span></div>
+      <div id="sqPushOptions" style="display:flex;flex-direction:column;gap:7px;padding:10px 14px 12px"></div>
+    </div>
+
+    <div class="sq-field" style="margin-bottom:14px">
+      <div class="sq-field-head"><span class="sq-label">Selected Push Message</span><button class="sq-copy" onclick="sqCopy('sqPushMsg',this)">Copy</button></div>
+      <textarea id="sqPushMsg" rows="2" style="border:none;resize:none;padding:13px 14px;font-family:inherit;font-size:13px;line-height:1.65;width:100%;outline:none;min-height:58px"></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px;align-items:flex-end">
+      <div style="flex:0 0 auto">
+        <label style="display:block;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Article ID (4 digits)</label>
+        <input type="text" id="sqArticleId" maxlength="8" placeholder="e.g. 1234"
+          oninput="sqRebuildBraze()"
+          style="border:1.5px solid #d4d8d4;border-radius:8px;padding:9px 12px;font-family:inherit;font-size:14px;width:120px;outline:none">
+      </div>
+    </div>
+
+    <div class="sq-field" style="margin-bottom:14px">
+      <div class="sq-field-head"><span class="sq-label">iOS Deeplink</span><button class="sq-copy" onclick="sqCopy('sqDeeplinkIos',this)">Copy</button></div>
+      <textarea id="sqDeeplinkIos" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
+    </div>
+
+    <div class="sq-field" style="margin-bottom:14px">
+      <div class="sq-field-head"><span class="sq-label">Android Deeplink</span><button class="sq-copy" onclick="sqCopy('sqDeeplinkAndroid',this)">Copy</button></div>
+      <textarea id="sqDeeplinkAndroid" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
+    </div>
+
+    <div class="sq-field">
+      <div class="sq-field-head"><span class="sq-label">Web URL</span><button class="sq-copy" onclick="sqCopy('sqWebUrl',this)">Copy</button></div>
+      <textarea id="sqWebUrl" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
     </div>
   </div>
 </div>
@@ -3478,12 +3525,11 @@ function sqShowOutput(squadText){
 }
 
 function sqRebuildFull(squadText){
-  const title   = document.getElementById('sqTitle')   ? document.getElementById('sqTitle').value   : '';
   const intro   = document.getElementById('sqIntro')   ? document.getElementById('sqIntro').value   : '';
   const heading = document.getElementById('sqHeading') ? document.getElementById('sqHeading').value : '';
   const squad   = squadText !== undefined ? squadText : (document.getElementById('sqSquadOut') ? document.getElementById('sqSquadOut').value : '');
-  if(!title && !intro) return;
-  const parts = [title, '', intro];
+  if(!intro) return;
+  const parts = [intro];
   if(heading){ parts.push(''); parts.push(heading); }
   if(squad){ parts.push(''); parts.push(squad); }
   const fullTa = document.getElementById('sqFullOut');
@@ -3491,6 +3537,78 @@ function sqRebuildFull(squadText){
   fullTa.style.height = 'auto';
   fullTa.style.height = (fullTa.scrollHeight + 2) + 'px';
   document.getElementById('sqFullCard').style.display = '';
+  sqRebuildBraze();
+}
+
+function sqRebuildBraze(){
+  const r = parseInt(document.getElementById('sqRound').value);
+  if(!r || !SQ_ROUNDS[r]) return;
+  const {opponent, day, time, venue} = SQ_ROUNDS[r];
+  const articleId = (document.getElementById('sqArticleId').value || '').trim();
+
+  // Title
+  const pushTitleEl = document.getElementById('sqPushTitle');
+  pushTitleEl.value = '20-MAN SQUAD 👥';
+  pushTitleEl.style.height = 'auto';
+  pushTitleEl.style.height = (pushTitleEl.scrollHeight + 2) + 'px';
+
+  // Push message options
+  const timeLabel = time ? ` ${time} AEST` : '';
+  const dayLower = day.toLowerCase();
+  const options = [
+    `The Bunnies' 20-man squad to face the ${opponent} this ${day} has been named.`,
+    `Our 20-man squad for ${dayLower}'s clash with the ${opponent}${timeLabel ? ' at' + timeLabel : ''} is here.`,
+    `Coach Wayne Bennett has named his squad for ${dayLower}'s match against the ${opponent} at ${venue}.`,
+  ];
+  const optionsEl = document.getElementById('sqPushOptions');
+  optionsEl.innerHTML = '';
+  const currentMsg = document.getElementById('sqPushMsg').value;
+  options.forEach((opt, i) => {
+    const row = document.createElement('label');
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;line-height:1.55;color:#374151;padding:8px 10px;border-radius:7px;border:1.5px solid #e5e7eb;background:#fafafa';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'sqPushOpt';
+    radio.value = opt;
+    radio.style.cssText = 'margin-top:3px;flex-shrink:0;accent-color:var(--g)';
+    radio.checked = i === 0 || currentMsg === opt;
+    radio.addEventListener('change', () => {
+      const ta = document.getElementById('sqPushMsg');
+      ta.value = opt;
+      ta.style.height = 'auto';
+      ta.style.height = (ta.scrollHeight + 2) + 'px';
+    });
+    if(radio.checked && i === 0 && !currentMsg){
+      const ta = document.getElementById('sqPushMsg');
+      if(!ta.value) { ta.value = opt; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; }
+    }
+    const span = document.createElement('span');
+    span.textContent = opt;
+    row.appendChild(radio);
+    row.appendChild(span);
+    optionsEl.appendChild(row);
+  });
+  // Ensure sqPushMsg is set to first option if empty
+  const msgTa = document.getElementById('sqPushMsg');
+  if(!msgTa.value){ msgTa.value = options[0]; msgTa.style.height='auto'; msgTa.style.height=(msgTa.scrollHeight+2)+'px'; }
+
+  // Slug: "rabbitohs-20-man-squad-for-round-N-vs-opponent-slug-2026"
+  const oppSlug = opponent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const urlSlug = `rabbitohs-20-man-squad-for-round-${r}-vs-${oppSlug}-2026`;
+
+  // Deeplinks
+  const deeplink = articleId ? `rabbitohs://news?cmsArticleId=${articleId}` : 'rabbitohs://news?cmsArticleId=';
+  const setTa = (id, val) => {
+    const el = document.getElementById(id);
+    el.value = val;
+    el.style.height = 'auto';
+    el.style.height = (el.scrollHeight + 2) + 'px';
+  };
+  setTa('sqDeeplinkIos', deeplink);
+  setTa('sqDeeplinkAndroid', deeplink);
+  setTa('sqWebUrl', `https://www.rabbitohs.com.au/news/-${urlSlug}`);
+
+  document.getElementById('sqBrazeCard').style.display = '';
 }
 
 window.sqParse = function(){
