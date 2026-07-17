@@ -6,6 +6,7 @@
 <title>SSFC Web and Socials Helper</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>&#x1F4BB;</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@6/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 <style>
@@ -1051,8 +1052,7 @@ button{touch-action:manipulation}
         <input type="file" accept="image/*" id="sqImgInput" onchange="sqLoadImage(this)" style="display:none">
       </div>
       <img id="sqImgPreview" class="sq-img-preview" alt="Email screenshot">
-      <textarea class="sq-ta" id="sqImgPasteInput" style="margin-top:14px" placeholder="Type or paste player names here while looking at the screenshot above…&#10;&#10;Matt Dufty&#10;Alex Johnston&#10;Tallis Duncan&#10;…&#10;&#10;Interchange:&#10;Jye Gray&#10;…"></textarea>
-      <button class="sq-parse-btn" onclick="sqParseImg()">Format Squad List →</button>
+      <textarea id="sqImgPasteInput" style="display:none"></textarea>
     </div>
 
     <!-- Paste email panel -->
@@ -3392,26 +3392,44 @@ window.sqLoadImage = function(input){ sqShowImage(input.files[0]); };
     const imgItem = items.find(it => it.type.startsWith('image/'));
     const textItem = items.find(it => it.type === 'text/plain');
 
-    if(imgItem) sqShowImage(imgItem.getAsFile());
-
     if(textItem){
-      // Text in clipboard (e.g. copied from Mail) — auto-parse immediately
+      // Text in clipboard (copied from Mail) — auto-parse immediately, no OCR needed
       textItem.getAsString(function(txt){
         if(!txt.trim()) return;
-        const ta = document.getElementById('sqImgPasteInput');
-        ta.value = txt;
+        document.getElementById('sqImgPasteInput').value = txt;
         sqParseImg();
       });
-    } else if(imgItem){
-      // Image only — scroll to textarea and focus it so user knows to type names
-      const ta = document.getElementById('sqImgPasteInput');
-      setTimeout(function(){
-        ta.focus();
-        ta.scrollIntoView({behavior:'smooth', block:'center'});
-        ta.placeholder = 'Screenshot pasted above — now type or paste the player names here, then hit Format Squad List →';
-      }, 100);
+      if(imgItem) sqShowImage(imgItem.getAsFile());
+      return;
+    }
+
+    if(imgItem){
+      const file = imgItem.getAsFile();
+      sqShowImage(file);
+      sqOcrImage(file);
     }
   });
+
+  async function sqOcrImage(file){
+    const zone = document.getElementById('sqImgZone');
+    const origHTML = zone.innerHTML;
+
+    // Show spinner inside paste zone
+    zone.innerHTML = '<p style="color:#1a3d2b;font-weight:600">🔍 Reading squad from screenshot…</p><p style="font-size:11px;color:#aaa;margin-top:6px">This takes a few seconds on first use</p>';
+
+    try {
+      const result = await Tesseract.recognize(file, 'eng');
+      const text = result.data.text;
+      document.getElementById('sqImgPasteInput').value = text;
+      sqParseImg();
+      zone.innerHTML = '<p style="color:#1a3d2b;font-weight:600">✅ Squad extracted — scroll down to review</p>';
+    } catch(err) {
+      zone.innerHTML = origHTML;
+      // Restore click handler
+      zone.addEventListener('click', function(){ document.getElementById('sqPasteTarget').focus(); }, {once:true});
+      alert('OCR failed — please type the player names in the box below instead.');
+    }
+  }
 })();
 
 function parseSquadText(raw){
