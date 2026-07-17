@@ -3379,6 +3379,7 @@ function sqUpdateCopy(){
   });
   card.style.display = '';
   sqRebuildFull();
+  sqRebuildBraze();
 }
 
 window.sqSwitchInput = function(mode){
@@ -3605,7 +3606,7 @@ window.sqRebuildBraze = function sqRebuildBraze(){
   setTa('sqWebUrl', `https://www.rabbitohs.com.au/news/-${urlSlug}`);
 
   document.getElementById('sqBrazeCard').style.display = '';
-}
+};
 
 window.sqParse = function(){
   const raw = document.getElementById('sqPasteInput').value;
