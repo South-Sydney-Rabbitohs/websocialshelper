@@ -1044,11 +1044,11 @@ button{touch-action:manipulation}
 
     <!-- Image panel (default) -->
     <div id="sqImagePanel">
-      <div class="sq-img-zone" id="sqImgZone" onclick="document.getElementById('sqPasteTarget').focus()">
-        <input type="file" accept="image/*" id="sqImgInput" onchange="sqLoadImage(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+      <div class="sq-img-zone" id="sqImgZone">
         <textarea id="sqPasteTarget" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;resize:none" tabindex="-1" aria-hidden="true"></textarea>
         <p>📋 Click here, then press <strong>Cmd+V</strong> to paste your screenshot</p>
-        <p style="font-size:11px;margin-top:6px;color:#aaa">Or drag &amp; drop / click to upload a file</p>
+        <p style="font-size:11px;margin-top:8px;color:#bbb">or <label for="sqImgInput" style="color:#1a3d2b;font-weight:600;cursor:pointer;text-decoration:underline">click to upload a file</label></p>
+        <input type="file" accept="image/*" id="sqImgInput" onchange="sqLoadImage(this)" style="display:none">
       </div>
       <img id="sqImgPreview" class="sq-img-preview" alt="Email screenshot">
       <textarea class="sq-ta" id="sqImgPasteInput" style="margin-top:14px" placeholder="Type or paste player names here while looking at the screenshot above…&#10;&#10;Matt Dufty&#10;Alex Johnston&#10;Tallis Duncan&#10;…&#10;&#10;Interchange:&#10;Jye Gray&#10;…"></textarea>
@@ -1100,7 +1100,15 @@ function switchTab(name){
   document.querySelectorAll('.app-tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   document.getElementById('tab-btn-'+name).classList.add('active');
+  try{ localStorage.setItem('ssfc-last-tab', name); }catch(e){}
 }
+// Restore last tab on load
+(function(){
+  try{
+    const last = localStorage.getItem('ssfc-last-tab');
+    if(last && document.getElementById('tab-'+last)) switchTab(last);
+  }catch(e){}
+})();
 </script>
 <script>
 /* IMAGE RESIZER */
