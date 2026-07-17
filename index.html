@@ -1063,17 +1063,8 @@ button{touch-action:manipulation}
     </div>
   </div>
 
-  <!-- Formatted squad output -->
-  <div class="sq-card" id="sqOutputCard" style="display:none">
-    <div class="sq-card-title">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Formatted Squad
-    </div>
-    <div class="sq-field">
-      <div class="sq-field-head"><span class="sq-label">Squad List (CMS format)</span><button class="sq-copy" onclick="sqCopy('sqSquadOut',this)">Copy</button></div>
-      <textarea id="sqSquadOut" class="sq-field" style="border:none;resize:vertical;padding:11px 13px;font-family:'SFMono-Regular',Consolas,monospace;font-size:13px;line-height:1.55;min-height:280px;width:100%;outline:none"></textarea>
-    </div>
-  </div>
+  <!-- Hidden internal squad value (feeds Full Article) -->
+  <textarea id="sqSquadOut" style="display:none"></textarea>
 
   <!-- Full article output -->
   <div class="sq-card" id="sqFullCard" style="display:none">
@@ -3391,7 +3382,27 @@ window.sqLoadImage = function(input){ sqShowImage(input.files[0]); };
     e.preventDefault();
     const items = Array.from(e.clipboardData.items || []);
     const imgItem = items.find(it => it.type.startsWith('image/'));
+    const textItem = items.find(it => it.type === 'text/plain');
+
     if(imgItem) sqShowImage(imgItem.getAsFile());
+
+    if(textItem){
+      // Text in clipboard (e.g. copied from Mail) — auto-parse immediately
+      textItem.getAsString(function(txt){
+        if(!txt.trim()) return;
+        const ta = document.getElementById('sqImgPasteInput');
+        ta.value = txt;
+        sqParseImg();
+      });
+    } else if(imgItem){
+      // Image only — scroll to textarea and focus it so user knows to type names
+      const ta = document.getElementById('sqImgPasteInput');
+      setTimeout(function(){
+        ta.focus();
+        ta.scrollIntoView({behavior:'smooth', block:'center'});
+        ta.placeholder = 'Screenshot pasted above — now type or paste the player names here, then hit Format Squad List →';
+      }, 100);
+    }
   });
 })();
 
@@ -3436,12 +3447,7 @@ function formatSquad(starters, interchange){
 }
 
 function sqShowOutput(squadText){
-  const outCard = document.getElementById('sqOutputCard');
-  const outTa = document.getElementById('sqSquadOut');
-  outTa.value = squadText;
-  outTa.style.height = 'auto';
-  outTa.style.height = (outTa.scrollHeight + 2) + 'px';
-  outCard.style.display = '';
+  document.getElementById('sqSquadOut').value = squadText;
   sqRebuildFull(squadText);
 }
 
@@ -3491,7 +3497,6 @@ window.sqCopy = function(id, btn){
   if(el) el.addEventListener('input', () => sqRebuildFull());
 });
 
-document.getElementById('sqSquadOut').addEventListener('input', () => sqRebuildFull(document.getElementById('sqSquadOut').value));
 
 })();
 // ── End 20-Man Squad Helper ──────────────────────────────────────────────────
