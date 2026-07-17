@@ -450,6 +450,36 @@ button{touch-action:manipulation}
 #tab-teamlist .tl-empty-state{text-align:center;color:#999;font-size:14px;padding:30px 0}
 #tab-teamlist footer.tl-notes{max-width:900px;margin:30px auto 0;padding:16px;font-size:12px;color:#888;border-top:1px solid #e0e0e0}
 #tab-teamlist footer.tl-notes ul{margin:6px 0 0 18px;padding:0}
+
+/* ── 20-Man Squad Helper ── */
+#tab-squad{background:#f5f7f5;min-height:100vh;padding:32px 24px}
+#tab-squad .sq-wrap{max-width:820px;margin:0 auto}
+#tab-squad h1{font-size:26px;font-weight:700;color:#111;margin:0 0 4px}
+#tab-squad .sq-sub{font-size:13px;color:#6b7280;margin:0 0 28px}
+#tab-squad .sq-card{background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:22px 24px;margin-bottom:18px}
+#tab-squad .sq-card-title{font-size:13px;font-weight:700;color:#1a3d2b;text-transform:uppercase;letter-spacing:.06em;margin:0 0 14px;display:flex;align-items:center;gap:7px}
+#tab-squad select,#tab-squad .sq-ta{width:100%;border:1.5px solid #dde3de;border-radius:9px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;background:#fff;color:#111}
+#tab-squad select:focus,#tab-squad .sq-ta:focus{border-color:#1a3d2b}
+#tab-squad .sq-ta{resize:vertical;min-height:160px;font-size:13px;line-height:1.55}
+#tab-squad .sq-field{border:1px solid #e8e8e8;border-radius:9px;overflow:hidden;margin-bottom:12px}
+#tab-squad .sq-field:last-child{margin-bottom:0}
+#tab-squad .sq-field-head{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fafafa;border-bottom:1px solid #efefef}
+#tab-squad .sq-label{font-size:12px;font-weight:700;color:#1a3d2b}
+#tab-squad .sq-copy{background:#c8102e;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit}
+#tab-squad .sq-copy.sq-copied{background:#1a3d2b}
+#tab-squad .sq-field textarea{width:100%;border:none;resize:none;padding:11px 13px;font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:13px;line-height:1.55;color:#111;display:block;outline:none;background:#fff}
+#tab-squad .sq-input-tabs{display:flex;gap:6px;margin-bottom:14px}
+#tab-squad .sq-itab{border:1.5px solid #dde3de;background:#f5f7f5;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#555;font-family:inherit;transition:all .15s}
+#tab-squad .sq-itab.active{background:#1a3d2b;color:#fff;border-color:#1a3d2b}
+#tab-squad .sq-img-zone{border:2px dashed #c8d4cc;border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer;position:relative;transition:background .15s,border-color .15s}
+#tab-squad .sq-img-zone:hover{border-color:#1a3d2b;background:#f0f7f3}
+#tab-squad .sq-img-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+#tab-squad .sq-img-zone p{font-size:13px;color:#888;margin:0}
+#tab-squad .sq-img-preview{width:100%;border-radius:8px;margin-top:12px;border:1px solid #e0e0e0;display:none}
+#tab-squad .sq-parse-btn{width:100%;margin-top:12px;padding:11px;background:#1a3d2b;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+#tab-squad .sq-parse-btn:hover{background:#005035}
+#tab-squad .sq-parse-btn:disabled{opacity:.4;cursor:not-allowed}
+#tab-squad .sq-hint{font-size:12px;color:#888;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -473,6 +503,10 @@ button{touch-action:manipulation}
     <button class="app-tab" onclick="switchTab('teamlist')" id="tab-btn-teamlist">
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v2a1 1 0 001 1h4a1 1 0 001-1V3M8 11h8M8 15h5"/></svg>
       Team List Tuesday
+    </button>
+    <button class="app-tab" onclick="switchTab('squad')" id="tab-btn-squad">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87"/></svg>
+      20-Man Squad
     </button>
     <button class="app-tab" onclick="switchTab('judiciary')" id="tab-btn-judiciary">
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3v3M6 6l1.5 1.5M18 6l-1.5 1.5M9 12h6M7 18h10M5 12a7 7 0 0114 0"/></svg>
@@ -937,6 +971,124 @@ button{touch-action:manipulation}
 
 </main>
 </div>
+<div class="tab-panel" id="tab-squad">
+<div class="sq-wrap">
+  <h1>👥 20-Man Squad Helper</h1>
+  <p class="sq-sub">Select the round to generate article copy, then paste or upload Jeremy's email to format the squad list.</p>
+
+  <!-- Round selector -->
+  <div class="sq-card">
+    <div class="sq-card-title">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Round &amp; Match Details
+    </div>
+    <select id="sqRound">
+      <option value="">Select round…</option>
+      <option value="1">Round 1 — Dolphins · Sun 8 Mar · Suncorp Stadium, Brisbane</option>
+      <option value="2">Round 2 — Sydney Roosters · Fri 13 Mar · Allianz Stadium, Sydney</option>
+      <option value="3">Round 3 — Wests Tigers · Sat 21 Mar · Polytec Stadium, Gosford</option>
+      <option value="5">Round 5 — Canterbury-Bankstown Bulldogs · Fri 3 Apr · Accor Stadium, Sydney</option>
+      <option value="6">Round 6 — Canberra Raiders · Sat 11 Apr · Optus Stadium, Perth</option>
+      <option value="7">Round 7 — St George Illawarra Dragons · Sat 18 Apr · Accor Stadium, Sydney</option>
+      <option value="8">Round 8 — Melbourne Storm · Sat 25 Apr · AAMI Park, Melbourne</option>
+      <option value="9">Round 9 — Newcastle Knights · Sun 3 May · McDonald Jones Stadium, Newcastle</option>
+      <option value="10">Round 10 — Cronulla-Sutherland Sharks · Sat 9 May · Accor Stadium, Sydney</option>
+      <option value="11">Round 11 — Dolphins · Fri 15 May · Suncorp Stadium, Brisbane</option>
+      <option value="12">Round 12 — North Queensland Cowboys · Sun 24 May · Queensland Country Bank Stadium, Townsville</option>
+      <option value="14">Round 14 — Manly-Warringah Sea Eagles · Thu 4 Jun · 4 Pines Park, Sydney</option>
+      <option value="15">Round 15 — Brisbane Broncos · Thu 11 Jun · Accor Stadium, Sydney</option>
+      <option value="17">Round 17 — Parramatta Eels · Thu 25 Jun · 7:50 PM · CommBank Stadium, Sydney</option>
+      <option value="18">Round 18 — Penrith Panthers · Fri 3 Jul · 8:00 PM · CommBank Stadium, Sydney</option>
+      <option value="19">Round 19 — Newcastle Knights · Sun 12 Jul · 2:00 PM · Accor Stadium, Sydney</option>
+      <option value="20">Round 20 — Canberra Raiders · Sat 18 Jul · 3:00 PM · GIO Stadium, Canberra</option>
+      <option value="21">Round 21 — Melbourne Storm · Fri 24 Jul · 8:00 PM · Accor Stadium, Sydney</option>
+      <option value="22">Round 22 — Cronulla-Sutherland Sharks · Sun 2 Aug · 2:00 PM · Ocean Protect Stadium, Sydney</option>
+      <option value="23">Round 23 — Parramatta Eels · Sat 8 Aug · 7:35 PM · Allianz Stadium, Sydney</option>
+      <option value="24">Round 24 — Canterbury-Bankstown Bulldogs · Fri 14 Aug · 8:00 PM · Accor Stadium, Sydney</option>
+      <option value="25">Round 25 — New Zealand Warriors · Sat 22 Aug · 5:30 PM · Accor Stadium, Sydney</option>
+      <option value="26">Round 26 — Gold Coast Titans · Sat 29 Aug · 3:00 PM · Cbus Super Stadium, Gold Coast</option>
+      <option value="27">Round 27 — Sydney Roosters · Fri 4 Sep · 8:00 PM · Allianz Stadium, Sydney</option>
+    </select>
+  </div>
+
+  <!-- Generated copy fields -->
+  <div class="sq-card" id="sqCopyCard" style="display:none">
+    <div class="sq-card-title">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Article Copy
+    </div>
+    <div class="sq-field">
+      <div class="sq-field-head"><span class="sq-label">Title</span><button class="sq-copy" onclick="sqCopy('sqTitle',this)">Copy</button></div>
+      <textarea id="sqTitle" class="sq-field" rows="1" style="border:none;resize:none;padding:11px 13px;font-family:inherit;font-size:14px;font-weight:600;width:100%;outline:none"></textarea>
+    </div>
+    <div class="sq-field">
+      <div class="sq-field-head"><span class="sq-label">Intro Paragraph</span><button class="sq-copy" onclick="sqCopy('sqIntro',this)">Copy</button></div>
+      <textarea id="sqIntro" class="sq-field" rows="3" style="border:none;resize:none;padding:11px 13px;font-family:inherit;font-size:13px;line-height:1.6;width:100%;outline:none"></textarea>
+    </div>
+    <div class="sq-field">
+      <div class="sq-field-head"><span class="sq-label">Squad Heading</span><button class="sq-copy" onclick="sqCopy('sqHeading',this)">Copy</button></div>
+      <textarea id="sqHeading" class="sq-field" rows="1" style="border:none;resize:none;padding:11px 13px;font-family:inherit;font-size:13px;width:100%;outline:none"></textarea>
+    </div>
+  </div>
+
+  <!-- Squad input -->
+  <div class="sq-card">
+    <div class="sq-card-title">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Squad List
+    </div>
+    <div class="sq-input-tabs">
+      <button class="sq-itab active" id="sqTabImg" onclick="sqSwitchInput('image')">Paste Screenshot</button>
+      <button class="sq-itab" id="sqTabPaste" onclick="sqSwitchInput('paste')">Paste Email Text</button>
+    </div>
+
+    <!-- Image panel (default) -->
+    <div id="sqImagePanel">
+      <div class="sq-img-zone" id="sqImgZone" onclick="document.getElementById('sqPasteTarget').focus()">
+        <input type="file" accept="image/*" id="sqImgInput" onchange="sqLoadImage(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+        <textarea id="sqPasteTarget" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;resize:none" tabindex="-1" aria-hidden="true"></textarea>
+        <p>📋 Click here, then press <strong>Cmd+V</strong> to paste your screenshot</p>
+        <p style="font-size:11px;margin-top:6px;color:#aaa">Or drag &amp; drop / click to upload a file</p>
+      </div>
+      <img id="sqImgPreview" class="sq-img-preview" alt="Email screenshot">
+      <textarea class="sq-ta" id="sqImgPasteInput" style="margin-top:14px" placeholder="Type or paste player names here while looking at the screenshot above…&#10;&#10;Matt Dufty&#10;Alex Johnston&#10;Tallis Duncan&#10;…&#10;&#10;Interchange:&#10;Jye Gray&#10;…"></textarea>
+      <button class="sq-parse-btn" onclick="sqParseImg()">Format Squad List →</button>
+    </div>
+
+    <!-- Paste email panel -->
+    <div id="sqPastePanel" style="display:none">
+      <textarea class="sq-ta" id="sqPasteInput" placeholder="Paste Jeremy's email here — numbered or unnumbered, both work. Paste just the player list or the whole email."></textarea>
+      <p class="sq-hint">Numbers optional — if they're missing after paste, the squad will be auto-numbered in order.</p>
+      <button class="sq-parse-btn" onclick="sqParse()">Format Squad List →</button>
+    </div>
+  </div>
+
+  <!-- Formatted squad output -->
+  <div class="sq-card" id="sqOutputCard" style="display:none">
+    <div class="sq-card-title">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Formatted Squad
+    </div>
+    <div class="sq-field">
+      <div class="sq-field-head"><span class="sq-label">Squad List (CMS format)</span><button class="sq-copy" onclick="sqCopy('sqSquadOut',this)">Copy</button></div>
+      <textarea id="sqSquadOut" class="sq-field" style="border:none;resize:vertical;padding:11px 13px;font-family:'SFMono-Regular',Consolas,monospace;font-size:13px;line-height:1.55;min-height:280px;width:100%;outline:none"></textarea>
+    </div>
+  </div>
+
+  <!-- Full article output -->
+  <div class="sq-card" id="sqFullCard" style="display:none">
+    <div class="sq-card-title">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+      Full Article (combined)
+    </div>
+    <div class="sq-field">
+      <div class="sq-field-head"><span class="sq-label">Ready to paste into CMS</span><button class="sq-copy" onclick="sqCopy('sqFullOut',this)">Copy</button></div>
+      <textarea id="sqFullOut" class="sq-field" style="border:none;resize:vertical;padding:11px 13px;font-family:'SFMono-Regular',Consolas,monospace;font-size:13px;line-height:1.55;min-height:400px;width:100%;outline:none"></textarea>
+    </div>
+  </div>
+</div>
+</div>
+
 <div class="tab-panel" id="tab-video">
 <div style="max-width:700px;margin:40px auto;padding:0 24px;">
   <div style="background:#fff;border:1px solid #d4d8d4;border-radius:16px;padding:36px;box-shadow:0 2px 16px rgba(0,0,0,.08);">
@@ -3116,6 +3268,233 @@ function escapeHtml(str) {
 
 render();
 })();
+
+// ── 20-Man Squad Helper ──────────────────────────────────────────────────────
+(function(){
+
+const SQ_ROUNDS = {
+   1: { opponent:'Dolphins',                        day:'Sunday',    time:'',         venue:'Suncorp Stadium, Brisbane' },
+   2: { opponent:'Sydney Roosters',                 day:'Friday',    time:'',         venue:'Allianz Stadium, Sydney' },
+   3: { opponent:'Wests Tigers',                    day:'Saturday',  time:'',         venue:'Polytec Stadium, Gosford' },
+   5: { opponent:'Canterbury-Bankstown Bulldogs',   day:'Friday',    time:'',         venue:'Accor Stadium, Sydney' },
+   6: { opponent:'Canberra Raiders',                day:'Saturday',  time:'',         venue:'Optus Stadium, Perth' },
+   7: { opponent:'St George Illawarra Dragons',     day:'Saturday',  time:'',         venue:'Accor Stadium, Sydney' },
+   8: { opponent:'Melbourne Storm',                 day:'Saturday',  time:'',         venue:'AAMI Park, Melbourne' },
+   9: { opponent:'Newcastle Knights',               day:'Sunday',    time:'',         venue:'McDonald Jones Stadium, Newcastle' },
+  10: { opponent:'Cronulla-Sutherland Sharks',      day:'Saturday',  time:'',         venue:'Accor Stadium, Sydney' },
+  11: { opponent:'Dolphins',                        day:'Friday',    time:'',         venue:'Suncorp Stadium, Brisbane' },
+  12: { opponent:'North Queensland Cowboys',        day:'Sunday',    time:'',         venue:'Queensland Country Bank Stadium, Townsville' },
+  14: { opponent:'Manly-Warringah Sea Eagles',      day:'Thursday',  time:'',         venue:'4 Pines Park, Sydney' },
+  15: { opponent:'Brisbane Broncos',                day:'Thursday',  time:'',         venue:'Accor Stadium, Sydney' },
+  17: { opponent:'Parramatta Eels',                 day:'Thursday',  time:'7:50 PM',  venue:'CommBank Stadium, Sydney' },
+  18: { opponent:'Penrith Panthers',                day:'Friday',    time:'8:00 PM',  venue:'CommBank Stadium, Sydney' },
+  19: { opponent:'Newcastle Knights',               day:'Sunday',    time:'2:00 PM',  venue:'Accor Stadium, Sydney' },
+  20: { opponent:'Canberra Raiders',                day:'Saturday',  time:'3:00 PM',  venue:'GIO Stadium, Canberra' },
+  21: { opponent:'Melbourne Storm',                 day:'Friday',    time:'8:00 PM',  venue:'Accor Stadium, Sydney' },
+  22: { opponent:'Cronulla-Sutherland Sharks',      day:'Sunday',    time:'2:00 PM',  venue:'Ocean Protect Stadium, Sydney' },
+  23: { opponent:'Parramatta Eels',                 day:'Saturday',  time:'7:35 PM',  venue:'Allianz Stadium, Sydney' },
+  24: { opponent:'Canterbury-Bankstown Bulldogs',   day:'Friday',    time:'8:00 PM',  venue:'Accor Stadium, Sydney' },
+  25: { opponent:'New Zealand Warriors',            day:'Saturday',  time:'5:30 PM',  venue:'Accor Stadium, Sydney' },
+  26: { opponent:'Gold Coast Titans',               day:'Saturday',  time:'3:00 PM',  venue:'Cbus Super Stadium, Gold Coast' },
+  27: { opponent:'Sydney Roosters',                 day:'Friday',    time:'8:00 PM',  venue:'Allianz Stadium, Sydney' },
+};
+
+// Auto-select the upcoming round based on today's date
+const ROUND_DATES = [[1,'2026-03-08'],[2,'2026-03-13'],[3,'2026-03-21'],[5,'2026-04-03'],[6,'2026-04-11'],[7,'2026-04-18'],[8,'2026-04-25'],[9,'2026-05-03'],[10,'2026-05-09'],[11,'2026-05-15'],[12,'2026-05-24'],[14,'2026-06-04'],[15,'2026-06-11'],[17,'2026-06-25'],[18,'2026-07-03'],[19,'2026-07-12'],[20,'2026-07-18'],[21,'2026-07-24'],[22,'2026-08-02'],[23,'2026-08-08'],[24,'2026-08-14'],[25,'2026-08-22'],[26,'2026-08-29'],[27,'2026-09-04']];
+
+function sqAutoSelectRound(){
+  const today = new Date().toISOString().slice(0,10);
+  const sel = document.getElementById('sqRound');
+  const next = ROUND_DATES.find(([,d]) => d >= today);
+  // fall back to last round if season is over
+  sel.value = next ? next[0] : ROUND_DATES[ROUND_DATES.length-1][0];
+  sqUpdateCopy();
+}
+
+// Run on page load and whenever the squad tab is opened
+sqAutoSelectRound();
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(name){
+  _origSwitchTab(name);
+  if(name === 'squad') sqAutoSelectRound();
+};
+
+document.getElementById('sqRound').addEventListener('change', sqUpdateCopy);
+
+function sqUpdateCopy(){
+  const r = parseInt(document.getElementById('sqRound').value);
+  const card = document.getElementById('sqCopyCard');
+  if(!r || !SQ_ROUNDS[r]){ card.style.display='none'; return; }
+  const {opponent, day, time, venue} = SQ_ROUNDS[r];
+  const year = 2026;
+  const timeStr = time ? ` at ${time} AEST` : '';
+  document.getElementById('sqTitle').value   = `👥 Rabbitohs 20-Man Squad for Round ${r} vs ${opponent} ${year}`;
+  document.getElementById('sqIntro').value   = `The South Sydney Rabbitohs are pleased to announce their 20-man squad for round ${r} of the ${year} NRL Premiership against the ${opponent} this ${day}${timeStr} at ${venue}.`;
+  document.getElementById('sqHeading').value = `### The South Sydney Rabbitohs' squad for ${day}'s clash with the ${opponent} is:`;
+  ['sqTitle','sqIntro','sqHeading'].forEach(id => {
+    const ta = document.getElementById(id);
+    ta.style.height = 'auto';
+    ta.style.height = (ta.scrollHeight + 2) + 'px';
+  });
+  card.style.display = '';
+  sqRebuildFull();
+}
+
+window.sqSwitchInput = function(mode){
+  document.getElementById('sqImagePanel').style.display = mode==='image' ? '' : 'none';
+  document.getElementById('sqPastePanel').style.display  = mode==='paste' ? '' : 'none';
+  document.getElementById('sqTabImg').classList.toggle('active',   mode==='image');
+  document.getElementById('sqTabPaste').classList.toggle('active', mode==='paste');
+};
+
+function sqShowImage(file){
+  if(!file || !file.type.startsWith('image/')) return;
+  const img = document.getElementById('sqImgPreview');
+  img.src = URL.createObjectURL(file);
+  img.style.display = 'block';
+}
+
+window.sqLoadImage = function(input){ sqShowImage(input.files[0]); };
+
+// Drag-and-drop on image zone
+(function(){
+  const zone = document.getElementById('sqImgZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='#1a3d2b'; zone.style.background='#f0f7f3'; });
+  zone.addEventListener('dragleave', () => { zone.style.borderColor=''; zone.style.background=''; });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.style.borderColor=''; zone.style.background='';
+    sqShowImage(e.dataTransfer.files[0]);
+  });
+})();
+
+// Hidden textarea receives paste when user clicks the paste zone and hits Cmd+V
+(function(){
+  const pasteTarget = document.getElementById('sqPasteTarget');
+  const zone = document.getElementById('sqImgZone');
+
+  // Focus the hidden textarea when zone is clicked (file input click is handled separately)
+  zone.addEventListener('click', function(e){
+    if(e.target !== document.getElementById('sqImgInput')){
+      pasteTarget.focus();
+      zone.style.borderColor = '#1a3d2b';
+      zone.style.background = '#f0f7f3';
+    }
+  });
+
+  pasteTarget.addEventListener('blur', function(){
+    zone.style.borderColor = '';
+    zone.style.background = '';
+  });
+
+  pasteTarget.addEventListener('paste', function(e){
+    e.preventDefault();
+    const items = Array.from(e.clipboardData.items || []);
+    const imgItem = items.find(it => it.type.startsWith('image/'));
+    if(imgItem) sqShowImage(imgItem.getAsFile());
+  });
+})();
+
+function parseSquadText(raw){
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const starters = [], interchange = [];
+  let inInt = false;
+  let sCount = 0, iCount = 0;
+
+  for(const line of lines){
+    if(/^interchange:?$/i.test(line)){ inInt = true; continue; }
+    // Skip obvious non-player lines (intro/signature sentences)
+    if(line.length > 70 && !/^\d/.test(line)) continue;
+    if(/^(hi\b|our\s|thanks|regards|cheers|jeremy|media\s|south\s+sydney|communications|manager)/i.test(line)) continue;
+
+    const m = line.match(/^(\d+)[\.\-\)\s:]+(.+)$/);
+    if(m){
+      const entry = {num: parseInt(m[1]), name: m[2].trim()};
+      inInt ? interchange.push(entry) : starters.push(entry);
+    } else if(line.length > 1 && line.length <= 50){
+      // Unnumbered — auto-number
+      if(inInt){ iCount++; interchange.push({num: sCount + iCount, name: line}); }
+      else { sCount++; starters.push({num: sCount, name: line}); }
+    }
+  }
+
+  // If numbered starters exist, fill sCount from them
+  if(starters.length && starters[0].num){ sCount = starters[starters.length-1].num || starters.length; }
+
+  return {starters, interchange};
+}
+
+function formatSquad(starters, interchange){
+  const lines = [];
+  starters.forEach(p => lines.push(`${p.num}- ${p.name}`));
+  if(interchange.length){
+    lines.push('');
+    lines.push('**Interchange:**');
+    interchange.forEach(p => lines.push(`${p.num}- ${p.name}`));
+  }
+  return lines.join('\n');
+}
+
+function sqShowOutput(squadText){
+  const outCard = document.getElementById('sqOutputCard');
+  const outTa = document.getElementById('sqSquadOut');
+  outTa.value = squadText;
+  outTa.style.height = 'auto';
+  outTa.style.height = (outTa.scrollHeight + 2) + 'px';
+  outCard.style.display = '';
+  sqRebuildFull(squadText);
+}
+
+function sqRebuildFull(squadText){
+  const title   = document.getElementById('sqTitle')   ? document.getElementById('sqTitle').value   : '';
+  const intro   = document.getElementById('sqIntro')   ? document.getElementById('sqIntro').value   : '';
+  const heading = document.getElementById('sqHeading') ? document.getElementById('sqHeading').value : '';
+  const squad   = squadText !== undefined ? squadText : (document.getElementById('sqSquadOut') ? document.getElementById('sqSquadOut').value : '');
+  if(!title && !intro) return;
+  const parts = [title, '', intro];
+  if(heading){ parts.push(''); parts.push(heading); }
+  if(squad){ parts.push(''); parts.push(squad); }
+  const fullTa = document.getElementById('sqFullOut');
+  fullTa.value = parts.join('\n');
+  fullTa.style.height = 'auto';
+  fullTa.style.height = (fullTa.scrollHeight + 2) + 'px';
+  document.getElementById('sqFullCard').style.display = '';
+}
+
+window.sqParse = function(){
+  const raw = document.getElementById('sqPasteInput').value;
+  if(!raw.trim()) return;
+  const {starters, interchange} = parseSquadText(raw);
+  sqShowOutput(formatSquad(starters, interchange));
+};
+
+window.sqParseImg = function(){
+  const raw = document.getElementById('sqImgPasteInput').value;
+  if(!raw.trim()) return;
+  const {starters, interchange} = parseSquadText(raw);
+  sqShowOutput(formatSquad(starters, interchange));
+};
+
+window.sqCopy = function(id, btn){
+  const val = document.getElementById(id).value;
+  navigator.clipboard.writeText(val).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('sq-copied');
+    setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('sq-copied'); }, 1400);
+  });
+};
+
+// Re-build full article whenever the generated copy fields are manually edited
+['sqTitle','sqIntro','sqHeading'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', () => sqRebuildFull());
+});
+
+document.getElementById('sqSquadOut').addEventListener('input', () => sqRebuildFull(document.getElementById('sqSquadOut').value));
+
+})();
+// ── End 20-Man Squad Helper ──────────────────────────────────────────────────
 </script>
 </body>
 </html>
