@@ -1110,13 +1110,8 @@ button{touch-action:manipulation}
     </div>
 
     <div class="sq-field" style="margin-bottom:14px">
-      <div class="sq-field-head"><span class="sq-label">iOS Deeplink</span><button class="sq-copy" onclick="sqCopy('sqDeeplinkIos',this)">Copy</button></div>
+      <div class="sq-field-head"><span class="sq-label">Deeplink</span><button class="sq-copy" onclick="sqCopy('sqDeeplinkIos',this)">Copy</button></div>
       <textarea id="sqDeeplinkIos" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
-    </div>
-
-    <div class="sq-field" style="margin-bottom:14px">
-      <div class="sq-field-head"><span class="sq-label">Android Deeplink</span><button class="sq-copy" onclick="sqCopy('sqDeeplinkAndroid',this)">Copy</button></div>
-      <textarea id="sqDeeplinkAndroid" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
     </div>
 
     <div class="sq-field">
@@ -3490,6 +3485,7 @@ function parseSquadText(raw){
     // Skip obvious non-player lines (intro/signature sentences)
     if(line.length > 70 && !/^\d/.test(line)) continue;
     if(/^(hi\b|our\s|thanks|regards|cheers|jeremy|media\s|south\s+sydney|communications|manager)/i.test(line)) continue;
+    if(/original url|grammarly|spell check/i.test(line)) continue;
 
     const m = line.match(/^(\d+)[\.\-\)\s:]+(.+)$/);
     if(m){
@@ -3556,9 +3552,10 @@ function sqRebuildBraze(){
   const timeLabel = time ? ` ${time} AEST` : '';
   const dayLower = day.toLowerCase();
   const options = [
-    `The Bunnies' 20-man squad to face the ${opponent} this ${day} has been named.`,
-    `Our 20-man squad for ${dayLower}'s clash with the ${opponent}${timeLabel ? ' at' + timeLabel : ''} is here.`,
-    `Coach Wayne Bennett has named his squad for ${dayLower}'s match against the ${opponent} at ${venue}.`,
+    `Our 20-man squad for ${dayLower}'s clash with the ${opponent} is here.`,
+    `South Sydney's 20-man squad for Round ${r} vs the ${opponent} has been named.`,
+    `The squad is in for ${dayLower}'s Round ${r} clash with the ${opponent}.`,
+    `Our 20-man squad vs the ${opponent} has been updated.`,
   ];
   const optionsEl = document.getElementById('sqPushOptions');
   optionsEl.innerHTML = '';
@@ -3605,7 +3602,6 @@ function sqRebuildBraze(){
     el.style.height = (el.scrollHeight + 2) + 'px';
   };
   setTa('sqDeeplinkIos', deeplink);
-  setTa('sqDeeplinkAndroid', deeplink);
   setTa('sqWebUrl', `https://www.rabbitohs.com.au/news/-${urlSlug}`);
 
   document.getElementById('sqBrazeCard').style.display = '';
