@@ -3536,7 +3536,7 @@ function sqRebuildFull(squadText){
   sqRebuildBraze();
 }
 
-function sqRebuildBraze(){
+window.sqRebuildBraze = function sqRebuildBraze(){
   const r = parseInt(document.getElementById('sqRound').value);
   if(!r || !SQ_ROUNDS[r]) return;
   const {opponent, day, time, venue} = SQ_ROUNDS[r];
