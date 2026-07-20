@@ -1127,63 +1127,48 @@ button{touch-action:manipulation}
 </div>
 
 <div class="tab-panel" id="tab-jezbot">
-<div style="max-width:820px;margin:0 auto;padding:32px 20px 60px">
+<div style="max-width:1200px;margin:0 auto;padding:32px 20px 60px">
   <div style="margin-bottom:20px">
     <h1 style="font-size:22px;font-weight:700;color:#111;margin:0 0 5px">✍️ JezBot</h1>
     <p style="font-size:13px;color:#6b7280;margin:0">Live copy checker based on Jez's style rules. Paste your copy and results update instantly.</p>
   </div>
 
-  <!-- Input card -->
-  <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:14px">
-    <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Paste your copy</div>
-    <textarea id="jezInput" oninput="jezLive()" rows="10" placeholder="Paste your article, social post, or any copy here…" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:180px"></textarea>
+  <!-- Two-column: input left, corrected right -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
 
-    <!-- Stats bar -->
-    <div id="jezStats" style="display:flex;gap:18px;margin-top:10px;font-size:12px;color:#9ca3af;padding:0 2px">
-      <span>Characters: <strong id="jezCharCount">0</strong></span>
-      <span>Words: <strong id="jezWordCount">0</strong></span>
-      <span>Lines: <strong id="jezLineCount">0</strong></span>
-    </div>
+    <!-- Left: Input card -->
+    <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;flex-direction:column">
+      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Paste your copy</div>
+      <textarea id="jezInput" oninput="jezLive()" rows="12" placeholder="Paste your article, social post, or any copy here…" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:220px"></textarea>
 
-    <!-- Case converter -->
-    <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f3f4f6">
-      <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Convert case</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">
-        <button onclick="jezConvert('sentence')" title="Sentence case" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e67e22;font-weight:700">Sc</span> Sentence case</button>
-        <button onclick="jezConvert('lower')"    title="lower case"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#3498db;font-weight:700">lc</span> lower case</button>
-        <button onclick="jezConvert('upper')"    title="UPPER CASE"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#8e44ad;font-weight:700">UC</span> UPPER CASE</button>
-        <button onclick="jezConvert('title')"    title="Title Case"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#27ae60;font-weight:700">TC</span> Title Case</button>
-        <button onclick="jezConvert('capital')"  title="Capitalised Case" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e91e63;font-weight:700">CC</span> Capitalised Case</button>
-        <button onclick="jezConvert('markdown')" title="Markdown" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">MD</span> Markdown</button>
+      <!-- Stats bar -->
+      <div id="jezStats" style="display:flex;gap:18px;margin-top:10px;font-size:12px;color:#9ca3af;padding:0 2px">
+        <span>Characters: <strong id="jezCharCount">0</strong></span>
+        <span>Words: <strong id="jezWordCount">0</strong></span>
+        <span>Lines: <strong id="jezLineCount">0</strong></span>
       </div>
-    </div>
-  </div>
 
-  <!-- Results (hidden until there is input) -->
-  <div id="jezResults" style="display:none">
-
-    <!-- Grade badge -->
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
-      <div id="jezGradeBadge" style="width:64px;height:64px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;flex-shrink:0;transition:background .25s"></div>
-      <div>
-        <div id="jezGradeLabel" style="font-size:15px;font-weight:700;color:#111;margin-bottom:3px"></div>
-        <div id="jezIssueSummary" style="font-size:13px;color:#6b7280"></div>
+      <!-- Case converter -->
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f3f4f6">
+        <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Convert case</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button onclick="jezConvert('sentence')" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e67e22;font-weight:700">Sc</span> Sentence case</button>
+          <button onclick="jezConvert('lower')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#3498db;font-weight:700">lc</span> lower case</button>
+          <button onclick="jezConvert('upper')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#8e44ad;font-weight:700">UC</span> UPPER CASE</button>
+          <button onclick="jezConvert('title')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#27ae60;font-weight:700">TC</span> Title Case</button>
+          <button onclick="jezConvert('capital')"  style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e91e63;font-weight:700">CC</span> Capitalised Case</button>
+          <button onclick="jezConvert('markdown')" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">MD</span> Markdown</button>
+        </div>
       </div>
     </div>
 
-    <!-- Issues list -->
-    <div id="jezIssuesCard" style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Issues found</div>
-      <div id="jezIssuesList"></div>
-    </div>
-
-    <!-- Corrected copy -->
-    <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06)">
+    <!-- Right: Corrected copy card (always visible, populated when there's input) -->
+    <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;flex-direction:column">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Corrected copy</span>
         <button onclick="jezCopyFixed(this)" style="background:var(--g);color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer">Copy</button>
       </div>
-      <textarea id="jezFixed" oninput="jezFixedStats()" rows="8" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:140px"></textarea>
+      <textarea id="jezFixed" oninput="jezFixedStats()" rows="12" placeholder="Corrected copy will appear here…" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:220px"></textarea>
 
       <!-- Stats bar -->
       <div id="jezFixedStats" style="display:flex;gap:18px;margin-top:10px;font-size:12px;color:#9ca3af;padding:0 2px">
@@ -1204,6 +1189,25 @@ button{touch-action:manipulation}
           <button onclick="jezConvertFixed('markdown')" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">MD</span> Markdown</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Below both columns: grade + issues (hidden until input) -->
+  <div id="jezResults" style="display:none">
+
+    <!-- Grade badge row -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+      <div id="jezGradeBadge" style="width:64px;height:64px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;flex-shrink:0;transition:background .25s"></div>
+      <div>
+        <div id="jezGradeLabel" style="font-size:15px;font-weight:700;color:#111;margin-bottom:3px"></div>
+        <div id="jezIssueSummary" style="font-size:13px;color:#6b7280"></div>
+      </div>
+    </div>
+
+    <!-- Issues list (full width) -->
+    <div id="jezIssuesCard" style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06)">
+      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Issues found</div>
+      <div id="jezIssuesList"></div>
     </div>
   </div>
 </div>
@@ -3903,6 +3907,28 @@ window.sqCopy = function(id, btn){
     },
 
     // US spelling fixes
+    // Days of week and months must be capitalised
+    { id:'daysmonths', label:'Day of the week or month name not capitalised',
+      detect(t){
+        const words=['monday','tuesday','wednesday','thursday','friday','saturday','sunday','january','february','march','april','may','june','july','august','september','october','november','december'];
+        const r=[];
+        for(const w of words){
+          const re=new RegExp(`(?<![A-Za-z])${w}(?![A-Za-z])`,'g');
+          let m;
+          while((m=re.exec(t))!==null) r.push({msg:`'${m[0]}' should be capitalised: '${m[0].charAt(0).toUpperCase()+m[0].slice(1)}'`,from:m.index,to:m.index+m[0].length});
+        }
+        return r;
+      },
+      fix(t){
+        const words=['monday','tuesday','wednesday','thursday','friday','saturday','sunday','january','february','march','april','may','june','july','august','september','october','november','december'];
+        let out=t;
+        for(const w of words){
+          out=out.replace(new RegExp(`(?<![A-Za-z])${w}(?![A-Za-z])`,'g'),m=>m.charAt(0).toUpperCase()+m.slice(1));
+        }
+        return out;
+      }
+    },
+
     { id:'spelling', label:'US spelling detected (use Australian spelling)',
       detect(t){
         const pairs=[['capitalize','capitalise'],['capitalized','capitalised'],['capitalizing','capitalising'],['color','colour'],['colors','colours'],['colored','coloured'],['center','centre'],['centered','centred'],['recognize','recognise'],['recognized','recognised'],['organize','organise'],['organized','organised'],['analyze','analyse'],['analyzed','analysed'],['defense','defence'],['offense','offence'],['license','licence'],['practice','practise'],['labeled','labelled'],['traveled','travelled'],['skillful','skilful'],['fulfill','fulfil'],['catalog','catalogue'],['dialog','dialogue'],['honor','honour'],['honored','honoured'],['favorite','favourite'],['favorites','favourites'],['neighbor','neighbour'],['neighbors','neighbours'],['behavior','behaviour'],['behaviors','behaviours'],['flavor','flavour'],['theater','theatre'],['maneuver','manoeuvre']];
