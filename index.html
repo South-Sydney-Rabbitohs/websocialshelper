@@ -1154,8 +1154,7 @@ button{touch-action:manipulation}
         <button onclick="jezConvert('upper')"    title="UPPER CASE"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#8e44ad;font-weight:700">UC</span> UPPER CASE</button>
         <button onclick="jezConvert('title')"    title="Title Case"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#27ae60;font-weight:700">TC</span> Title Case</button>
         <button onclick="jezConvert('capital')"  title="Capitalised Case" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e91e63;font-weight:700">CC</span> Capitalised Case</button>
-        <button onclick="jezConvert('alt')"      title="aLtErNaTiNg"   style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">aC</span> aLtErNaTiNg</button>
-        <button onclick="jezConvert('inverse')"  title="iNVERSE cASE"  style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#ff5722;font-weight:700">iC</span> InVeRsE CaSe</button>
+        <button onclick="jezConvert('markdown')" title="Markdown" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">MD</span> Markdown</button>
       </div>
     </div>
   </div>
@@ -1202,8 +1201,7 @@ button{touch-action:manipulation}
           <button onclick="jezConvertFixed('upper')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#8e44ad;font-weight:700">UC</span> UPPER CASE</button>
           <button onclick="jezConvertFixed('title')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#27ae60;font-weight:700">TC</span> Title Case</button>
           <button onclick="jezConvertFixed('capital')"  style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e91e63;font-weight:700">CC</span> Capitalised Case</button>
-          <button onclick="jezConvertFixed('alt')"      style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">aC</span> aLtErNaTiNg</button>
-          <button onclick="jezConvertFixed('inverse')"  style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#ff5722;font-weight:700">iC</span> InVeRsE CaSe</button>
+          <button onclick="jezConvertFixed('markdown')" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">MD</span> Markdown</button>
         </div>
       </div>
     </div>
@@ -3712,13 +3710,22 @@ window.sqParseImg = function(){
 };
 
 window.sqCopy = function(id, btn){
-  const val = document.getElementById(id).value;
-  navigator.clipboard.writeText(val).then(()=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  const val = el.value;
+  const confirm = () => {
     const orig = btn.textContent;
     btn.textContent = 'Copied!';
     btn.classList.add('sq-copied');
     setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('sq-copied'); }, 1400);
-  });
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(val).then(confirm).catch(()=>{
+      el.select(); document.execCommand('copy'); confirm();
+    });
+  } else {
+    el.select(); document.execCommand('copy'); confirm();
+  }
 };
 
 // Re-build full article whenever the generated copy fields are manually edited
@@ -3761,13 +3768,21 @@ window.sqCopy = function(id, btn){
     { id:'numwords', label:'Single-digit number not written as a word',
       detect(t){
         const map={1:'one',2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine'};
-        const r=[]; let m; const re=/(?<![0-9$#])(?<!\w)\b([1-9])\b(?!\s*[%,.\d]|\s*(st|nd|rd|th)\b)/g;
-        while((m=re.exec(t))!==null) r.push({msg:`Write '${m[1]}' as '${map[m[1]]}'`,from:m.index,to:m.index+m[0].length});
+        const r=[]; let m; const re=/\b([1-9])\b(?!\d|\s*(st|nd|rd|th)\b)/g;
+        while((m=re.exec(t))!==null){
+          const before=t[m.index-1]||'';
+          if(/[$#0-9]/.test(before)) continue;
+          r.push({msg:`Write '${m[1]}' as '${map[m[1]]}'`,from:m.index,to:m.index+m[0].length});
+        }
         return r;
       },
       fix(t){
         const map={'1':'one','2':'two','3':'three','4':'four','5':'five','6':'six','7':'seven','8':'eight','9':'nine'};
-        return t.replace(/(?<![0-9$#])(?<!\w)\b([1-9])\b(?!\s*[%,.\d]|\s*(st|nd|rd|th)\b)/g,(m,d)=>map[d]||m);
+        return t.replace(/\b([1-9])\b(?!\d|\s*(st|nd|rd|th)\b)/g,(m,d,_,offset,str)=>{
+          const before=str[offset-1]||'';
+          if(/[$#0-9]/.test(before)) return m;
+          return map[d]||m;
+        });
       }
     },
 
@@ -3836,8 +3851,8 @@ window.sqCopy = function(id, btn){
 
     // 'Heffron' without 'Park'
     { id:'heffron', label:'\'Heffron\' should always include \'Park\' (Heffron Park)',
-      detect(t){ const r=[]; let m; const re=/\bHeffron\b(?!\s+Park)/g; while((m=re.exec(t))!==null) r.push({msg:'Write \'Heffron Park\' not just \'Heffron\'',from:m.index,to:m.index+m[0].length}); return r; },
-      fix(t){ return t.replace(/\bHeffron\b(?!\s+Park)/g,'Heffron Park'); }
+      detect(t){ const r=[]; let m; const re=/\bHeffron\b(?!\s+Park)/gi; while((m=re.exec(t))!==null) r.push({msg:'Write \'Heffron Park\' not just \'Heffron\'',from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\bHeffron\b(?!\s+Park)/gi,'Heffron Park'); }
     },
 
     // Competition names — must use full official name
@@ -3864,14 +3879,25 @@ window.sqCopy = function(id, btn){
         return r;
       },
       fix(t){
-        // Apply from most-specific to least-specific to avoid double-expansion
         let out = t;
-        out = out.replace(/\bJersey\s+Flegg\b(?!\s+Cup)/gi, 'Jersey Flegg Cup');
-        out = out.replace(/(?<![A-Za-z])(Flegg\s+Cup|flegg\s+cup|Flegg|flegg)\b/gi, 'Jersey Flegg Cup');
-        out = out.replace(/\bHarold\s+Matthews\b(?!\s+Cup)/gi, 'Harold Matthews Cup');
-        out = out.replace(/\bTarsha\s+Gale\b(?!\s+Cup)/gi, 'Tarsha Gale Cup');
-        out = out.replace(/\bLisa\s+Fiaola\b(?!\s+Cup)/gi, 'Lisa Fiaola Cup');
-        out = out.replace(/\bSG\s+Ball\b(?!\s+Cup)/gi, 'SG Ball Cup');
+        // Use markers to protect already-correct full names before fixing partials
+        const comps = [
+          { full:'Jersey Flegg Cup',    partials:[/\bJersey\s+Flegg\b/gi, /\bFlegg(?:\s+Cup)?\b/gi] },
+          { full:'Harold Matthews Cup', partials:[/\bHarold\s+Matthews\b/gi] },
+          { full:'Tarsha Gale Cup',     partials:[/\bTarsha\s+Gale\b/gi] },
+          { full:'Lisa Fiaola Cup',     partials:[/\bLisa\s+Fiaola\b/gi] },
+          { full:'SG Ball Cup',         partials:[/\bSG\s+Ball\b/gi] },
+        ];
+        for(const {full, partials} of comps){
+          const marker = '\x01' + full.replace(/ /g,'_') + '\x01';
+          // Normalise correct full name first, then protect it
+          out = out.replace(new RegExp(full.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), full);
+          out = out.replace(new RegExp(full.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'), marker);
+          // Fix all partials
+          for(const re of partials){ re.lastIndex=0; out = out.replace(re, full); }
+          // Restore marker
+          out = out.replace(new RegExp(marker.replace(/\x01/g,'\\x01'),'g'), full);
+        }
         return out;
       }
     },
@@ -3978,14 +4004,19 @@ window.sqCopy = function(id, btn){
     // Collect all issues
     const allIssues = [];
     for(const rule of RULES){
-      const hits = rule.detect(input);
-      for(const h of hits) allIssues.push({rule, hit:h});
+      try {
+        const hits = rule.detect(input);
+        for(const h of hits) allIssues.push({rule, hit:h});
+      } catch(e){ console.warn('JezBot detect error ['+rule.id+']:', e); }
     }
 
     // Apply all fixes in sequence
     let fixed = input;
-    for(const rule of RULES) fixed = rule.fix(fixed);
-    // Ensure sentence-start capitalisation is preserved after fixes
+    for(const rule of RULES){
+      try { fixed = rule.fix(fixed); }
+      catch(e){ console.warn('JezBot fix error ['+rule.id+']:', e); }
+    }
+    // Ensure sentence-start capitalisation after all fixes
     fixed = fixed.replace(/(^|[.!?]\s+)([a-z])/g, (m,p1,p2)=>p1+p2.toUpperCase());
 
     // Grade
@@ -4052,8 +4083,15 @@ window.sqCopy = function(id, btn){
       return t.toLowerCase().replace(/\b\w+/g,(w,i)=>i===0||!minor.test(w)?w.charAt(0).toUpperCase()+w.slice(1):w);
     }
     if(mode==='sentence') return t.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, c=>c.toUpperCase());
-    if(mode==='alt'){ let i=0; return t.split('').map(c=>/[a-z]/i.test(c)?(i++%2===0?c.toLowerCase():c.toUpperCase()):c).join(''); }
     if(mode==='inverse') return t.split('').map(c=>c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join('');
+    if(mode==='markdown'){
+      // Normalise to clean markdown: collapse 3+ blank lines to 2, trim each line, preserve ### ** * markers
+      return t.split('\n')
+        .map(l=>l.trimEnd())
+        .join('\n')
+        .replace(/\n{3,}/g,'\n\n')
+        .trim();
+    }
     return t;
   }
 
