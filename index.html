@@ -1184,7 +1184,28 @@ button{touch-action:manipulation}
         <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Corrected copy</span>
         <button onclick="jezCopyFixed(this)" style="background:var(--g);color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer">Copy</button>
       </div>
-      <textarea id="jezFixed" rows="8" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:140px"></textarea>
+      <textarea id="jezFixed" oninput="jezFixedStats()" rows="8" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:140px"></textarea>
+
+      <!-- Stats bar -->
+      <div id="jezFixedStats" style="display:flex;gap:18px;margin-top:10px;font-size:12px;color:#9ca3af;padding:0 2px">
+        <span>Characters: <strong id="jezFixedCharCount">0</strong></span>
+        <span>Words: <strong id="jezFixedWordCount">0</strong></span>
+        <span>Lines: <strong id="jezFixedLineCount">0</strong></span>
+      </div>
+
+      <!-- Case converter -->
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f3f4f6">
+        <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Convert case</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button onclick="jezConvertFixed('sentence')" style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e67e22;font-weight:700">Sc</span> Sentence case</button>
+          <button onclick="jezConvertFixed('lower')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#3498db;font-weight:700">lc</span> lower case</button>
+          <button onclick="jezConvertFixed('upper')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#8e44ad;font-weight:700">UC</span> UPPER CASE</button>
+          <button onclick="jezConvertFixed('title')"    style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#27ae60;font-weight:700">TC</span> Title Case</button>
+          <button onclick="jezConvertFixed('capital')"  style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#e91e63;font-weight:700">CC</span> Capitalised Case</button>
+          <button onclick="jezConvertFixed('alt')"      style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#00bcd4;font-weight:700">aC</span> aLtErNaTiNg</button>
+          <button onclick="jezConvertFixed('inverse')"  style="font-size:12px;border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 10px;background:#fff;cursor:pointer;color:#374151;font-weight:500"><span style="color:#ff5722;font-weight:700">iC</span> InVeRsE CaSe</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -3763,7 +3784,12 @@ window.sqCopy = function(id, btn){
     // 'Bunnies' or 'the Bunnies'
     { id:'bunnies', label:'\'Bunnies\' used — use Rabbitohs, Souths, or South Sydney instead',
       detect(t){ const r=[]; let m; const re=/\bthe\s+Bunnies\b|\bBunnies\b/gi; while((m=re.exec(t))!==null) r.push({msg:`Replace '${m[0]}' with Rabbitohs, Souths, or South Sydney`,from:m.index,to:m.index+m[0].length}); return r; },
-      fix(t){ return t.replace(/\bthe\s+Bunnies\b/gi,'the Rabbitohs').replace(/\bBunnies\b/gi,'Rabbitohs'); }
+      fix(t){
+        return t
+          .replace(/\b(The)\s+Bunnies\b/g, 'The Rabbitohs')
+          .replace(/\b(the)\s+Bunnies\b/gi, 'the Rabbitohs')
+          .replace(/\bBunnies\b/gi, 'Rabbitohs');
+      }
     },
 
     // 'club' lowercase when referring to South Sydney
@@ -3802,16 +3828,52 @@ window.sqCopy = function(id, btn){
       fix(t){ return t.replace(/\bRound\s+(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\b/g,w=>w.toLowerCase()); }
     },
 
+    // 'Rabbitohs HQ' → 'USANA Rabbitohs Centre'
+    { id:'rabbitohshq', label:'\'Rabbitohs HQ\' should be \'USANA Rabbitohs Centre\'',
+      detect(t){ const r=[]; let m; const re=/\bRabbitohs\s+HQ\b/gi; while((m=re.exec(t))!==null) r.push({msg:'Replace \'Rabbitohs HQ\' with \'USANA Rabbitohs Centre\'',from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\bRabbitohs\s+HQ\b/gi,'USANA Rabbitohs Centre'); }
+    },
+
     // 'Heffron' without 'Park'
     { id:'heffron', label:'\'Heffron\' should always include \'Park\' (Heffron Park)',
       detect(t){ const r=[]; let m; const re=/\bHeffron\b(?!\s+Park)/g; while((m=re.exec(t))!==null) r.push({msg:'Write \'Heffron Park\' not just \'Heffron\'',from:m.index,to:m.index+m[0].length}); return r; },
       fix(t){ return t.replace(/\bHeffron\b(?!\s+Park)/g,'Heffron Park'); }
     },
 
-    // 'Flegg' without 'Jersey Flegg Cup'
-    { id:'flegg', label:'\'Flegg\' should be written as \'Jersey Flegg Cup\'',
-      detect(t){ const r=[]; let m; const re=/\bFlegg\b(?!\s+Cup)/g; while((m=re.exec(t))!==null){ if(!/Jersey\s+Flegg/.test(t.slice(Math.max(0,m.index-10),m.index))) r.push({msg:'Write \'Jersey Flegg Cup\' not just \'Flegg\'',from:m.index,to:m.index+m[0].length}); } return r; },
-      fix(t){ return t.replace(/\bFlegg\b(?!\s+Cup)/g,'Jersey Flegg Cup'); }
+    // Competition names — must use full official name
+    { id:'competitions', label:'Competition name shortened (use full official name)',
+      detect(t){
+        const r=[]; let m;
+        // For each competition, blank out the correct full name then find any partial usage
+        const comps=[
+          {full:'Jersey Flegg Cup',   partials:[/\bFlegg(?:\s+Cup)?\b/gi]},
+          {full:'Harold Matthews Cup', partials:[/\bHarold\s+Matthews\b(?!\s+Cup)/gi]},
+          {full:'Tarsha Gale Cup',    partials:[/\bTarsha\s+Gale\b(?!\s+Cup)/gi]},
+          {full:'Lisa Fiaola Cup',    partials:[/\bLisa\s+Fiaola\b(?!\s+Cup)/gi]},
+          {full:'SG Ball Cup',        partials:[/\bSG\s+Ball\b(?!\s+Cup)/gi, /\bSG\b(?!\s+Ball)/gi]},
+          {full:'NSW Cup',            partials:[]},
+        ];
+        for(const {full, partials} of comps){
+          // Blank the correct full name so it doesn't trigger its own partials
+          const safe = t.replace(new RegExp(full.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'_'.repeat(full.length));
+          for(const re of partials){
+            re.lastIndex=0;
+            while((m=re.exec(safe))!==null) r.push({msg:`'${t.slice(m.index,m.index+m[0].length)}' should be '${full}'`,from:m.index,to:m.index+m[0].length});
+          }
+        }
+        return r;
+      },
+      fix(t){
+        // Apply from most-specific to least-specific to avoid double-expansion
+        let out = t;
+        out = out.replace(/\bJersey\s+Flegg\b(?!\s+Cup)/gi, 'Jersey Flegg Cup');
+        out = out.replace(/(?<![A-Za-z])(Flegg\s+Cup|flegg\s+cup|Flegg|flegg)\b/gi, 'Jersey Flegg Cup');
+        out = out.replace(/\bHarold\s+Matthews\b(?!\s+Cup)/gi, 'Harold Matthews Cup');
+        out = out.replace(/\bTarsha\s+Gale\b(?!\s+Cup)/gi, 'Tarsha Gale Cup');
+        out = out.replace(/\bLisa\s+Fiaola\b(?!\s+Cup)/gi, 'Lisa Fiaola Cup');
+        out = out.replace(/\bSG\s+Ball\b(?!\s+Cup)/gi, 'SG Ball Cup');
+        return out;
+      }
     },
 
     // US spelling fixes
@@ -3847,9 +3909,9 @@ window.sqCopy = function(id, btn){
       detect(t){
         const r=[]; let m;
         const checks=[
-          [/\bNZ\s+Warriors\b/g, "New Zealand Warriors"],
-          [/\bCanterbury\s+Bulldogs\b/g, "Canterbury-Bankstown Bulldogs"],
-          [/\bCronulla\s+Sharks\b/g, "Cronulla-Sutherland Sharks"],
+          [/\bNZ\s+Warriors\b/gi, "New Zealand Warriors"],
+          [/\bCanterbury\s+Bulldogs\b/gi, "Canterbury-Bankstown Bulldogs"],
+          [/\bCronulla\s+Sharks\b/gi, "Cronulla-Sutherland Sharks"],
           [/\bManly\s+Sea\s+Eagles\b/g, "Manly-Warringah Sea Eagles"],
           [/\bNQ\s+Cowboys\b/g, "North Queensland Cowboys"],
           [/\bNorth\s+QLD\s+Cowboys\b/gi, "North Queensland Cowboys"],
@@ -3872,14 +3934,14 @@ window.sqCopy = function(id, btn){
       },
       fix(t){
         const subs=[
-          [/\bNZ\s+Warriors\b/g, "New Zealand Warriors"],
-          [/\bCanterbury\s+Bulldogs\b/g, "Canterbury-Bankstown Bulldogs"],
-          [/\bCronulla\s+Sharks\b/g, "Cronulla-Sutherland Sharks"],
-          [/\bManly\s+Sea\s+Eagles\b/g, "Manly-Warringah Sea Eagles"],
-          [/\bNQ\s+Cowboys\b/g, "North Queensland Cowboys"],
+          [/\bNZ\s+Warriors\b/gi, "New Zealand Warriors"],
+          [/\bCanterbury\s+Bulldogs\b/gi, "Canterbury-Bankstown Bulldogs"],
+          [/\bCronulla\s+Sharks\b/gi, "Cronulla-Sutherland Sharks"],
+          [/\bManly\s+Sea\s+Eagles\b/gi, "Manly-Warringah Sea Eagles"],
+          [/\bNQ\s+Cowboys\b/gi, "North Queensland Cowboys"],
           [/\bNorth\s+QLD\s+Cowboys\b/gi, "North Queensland Cowboys"],
-          [/\bSt\.?\s*George\s+Dragons\b/g, "St. George Illawarra Dragons"],
-          [/\bSt\.?\s*George\s+Illawarra\b(?!\s+Dragons)/g, "St. George Illawarra Dragons"],
+          [/\bSt\.?\s*George\s+Dragons\b/gi, "St. George Illawarra Dragons"],
+          [/\bSt\.?\s*George\s+Illawarra\b(?!\s+Dragons)/gi, "St. George Illawarra Dragons"],
         ];
         const mascots=['broncos','raiders','bulldogs','sharks','dolphins','titans','sea eagles','storm','knights','cowboys','eels','panthers','rabbitohs','dragons','roosters','warriors','tigers'];
         let out=t;
@@ -3923,6 +3985,8 @@ window.sqCopy = function(id, btn){
     // Apply all fixes in sequence
     let fixed = input;
     for(const rule of RULES) fixed = rule.fix(fixed);
+    // Ensure sentence-start capitalisation is preserved after fixes
+    fixed = fixed.replace(/(^|[.!?]\s+)([a-z])/g, (m,p1,p2)=>p1+p2.toUpperCase());
 
     // Grade
     const count = allIssues.length;
@@ -3965,6 +4029,7 @@ window.sqCopy = function(id, btn){
     fixedTa.style.height = (fixedTa.scrollHeight + 2) + 'px';
 
     document.getElementById('jezResults').style.display = '';
+    window.jezFixedStats();
   }
 
   window.jezLive = function(){
@@ -3973,25 +4038,38 @@ window.sqCopy = function(id, btn){
 
   window.jezConvert = function(mode){
     const ta = document.getElementById('jezInput');
-    const t = ta.value;
-    if(!t) return;
-    let out = t;
-    if(mode==='lower') out = t.toLowerCase();
-    else if(mode==='upper') out = t.toUpperCase();
-    else if(mode==='capital') out = t.replace(/\b\w/g, c=>c.toUpperCase());
-    else if(mode==='title'){
+    if(!ta.value) return;
+    ta.value = applyCase(ta.value, mode);
+    runCheck(ta.value);
+  };
+
+  function applyCase(t, mode){
+    if(mode==='lower') return t.toLowerCase();
+    if(mode==='upper') return t.toUpperCase();
+    if(mode==='capital') return t.replace(/\b\w/g, c=>c.toUpperCase());
+    if(mode==='title'){
       const minor=/^(a|an|the|and|but|or|for|nor|on|at|to|by|in|of|up|as|is)$/i;
-      out = t.toLowerCase().replace(/\b\w+/g,(w,i)=>i===0||!minor.test(w)?w.charAt(0).toUpperCase()+w.slice(1):w);
+      return t.toLowerCase().replace(/\b\w+/g,(w,i)=>i===0||!minor.test(w)?w.charAt(0).toUpperCase()+w.slice(1):w);
     }
-    else if(mode==='sentence'){
-      out = t.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, c=>c.toUpperCase());
-    }
-    else if(mode==='alt'){
-      let i=0; out=t.split('').map(c=>/[a-z]/i.test(c)?(i++%2===0?c.toLowerCase():c.toUpperCase()):c).join('');
-    }
-    else if(mode==='inverse') out = t.split('').map(c=>c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join('');
-    ta.value = out;
-    runCheck(out);
+    if(mode==='sentence') return t.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, c=>c.toUpperCase());
+    if(mode==='alt'){ let i=0; return t.split('').map(c=>/[a-z]/i.test(c)?(i++%2===0?c.toLowerCase():c.toUpperCase()):c).join(''); }
+    if(mode==='inverse') return t.split('').map(c=>c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join('');
+    return t;
+  }
+
+  window.jezFixedStats = function(){
+    const t = document.getElementById('jezFixed').value;
+    document.getElementById('jezFixedCharCount').textContent = t.length;
+    document.getElementById('jezFixedWordCount').textContent = t.trim() ? t.trim().split(/\s+/).length : 0;
+    document.getElementById('jezFixedLineCount').textContent = t ? t.split(/\n/).length : 0;
+  };
+
+  window.jezConvertFixed = function(mode){
+    const ta = document.getElementById('jezFixed');
+    ta.value = applyCase(ta.value, mode);
+    ta.style.height = 'auto';
+    ta.style.height = (ta.scrollHeight + 2) + 'px';
+    window.jezFixedStats();
   };
 
   window.jezCopyFixed = function(btn){
