@@ -513,6 +513,10 @@ button{touch-action:manipulation}
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3v3M6 6l1.5 1.5M18 6l-1.5 1.5M9 12h6M7 18h10M5 12a7 7 0 0114 0"/></svg>
       Judiciary Helper
     </button>
+    <button class="app-tab" onclick="switchTab('jezbot')" id="tab-btn-jezbot">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      JezBot
+    </button>
   <a class="app-tab" href="https://dpcbtlac5qgd9.cloudfront.net/" target="_blank" rel="noopener" style="text-decoration:none"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
       Bunnito</a>
   </div>
@@ -1117,6 +1121,52 @@ button{touch-action:manipulation}
     <div class="sq-field">
       <div class="sq-field-head"><span class="sq-label">Web URL</span><button class="sq-copy" onclick="sqCopy('sqWebUrl',this)">Copy</button></div>
       <textarea id="sqWebUrl" rows="1" style="border:none;resize:none;padding:13px 14px;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;width:100%;outline:none;line-height:1.5;min-height:46px"></textarea>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="tab-panel" id="tab-jezbot">
+<div style="max-width:780px;margin:0 auto;padding:32px 20px 60px">
+  <div style="margin-bottom:24px">
+    <h1 style="font-size:22px;font-weight:700;color:#111;margin:0 0 6px">✍️ JezBot</h1>
+    <p style="font-size:13px;color:#6b7280;margin:0">Paste your copy below and JezBot will check it against Jez's style rules, fix it, and give it a grade.</p>
+  </div>
+
+  <!-- Input -->
+  <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Paste your copy</span>
+      <button onclick="jezCheck()" style="background:var(--g);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.02em">Check with JezBot</button>
+    </div>
+    <textarea id="jezInput" rows="10" placeholder="Paste your article, social post, or any copy here…" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:180px"></textarea>
+  </div>
+
+  <!-- Results (hidden until check runs) -->
+  <div id="jezResults" style="display:none">
+
+    <!-- Grade badge -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div id="jezGradeBadge" style="width:68px;height:68px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0"></div>
+      <div>
+        <div id="jezGradeLabel" style="font-size:15px;font-weight:700;color:#111;margin-bottom:3px"></div>
+        <div id="jezIssueSummary" style="font-size:13px;color:#6b7280"></div>
+      </div>
+    </div>
+
+    <!-- Issues list -->
+    <div id="jezIssuesCard" style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:18px">
+      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Issues found</div>
+      <div id="jezIssuesList"></div>
+    </div>
+
+    <!-- Corrected copy -->
+    <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Corrected copy</span>
+        <button onclick="jezCopyFixed(this)" style="background:var(--g);color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer">Copy</button>
+      </div>
+      <textarea id="jezFixed" rows="10" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:180px"></textarea>
     </div>
   </div>
 </div>
@@ -3641,6 +3691,225 @@ window.sqCopy = function(id, btn){
 
 })();
 // ── End 20-Man Squad Helper ──────────────────────────────────────────────────
+</script>
+
+<script>
+// ── JezBot ───────────────────────────────────────────────────────────────────
+(function(){
+
+  // Each rule: { id, label, detect(text)->[{msg,from,to}], fix(text)->text }
+  const RULES = [
+
+    // &  →  and
+    { id:'ampersand', label:'& used instead of \'and\'',
+      detect(t){ const r=[]; let m; const re=/&(?!amp;|lt;|gt;|quot;|#)/g; while((m=re.exec(t))!==null) r.push({msg:'Replace \'&\' with \'and\'',from:m.index,to:m.index+1}); return r; },
+      fix(t){ return t.replace(/&(?!amp;|lt;|gt;|quot;|#)/g,'and'); }
+    },
+
+    // Em dash  →  comma
+    { id:'emdash', label:'Em dash used (use a comma or full stop instead)',
+      detect(t){ const r=[]; let m; const re=/—|–/g; while((m=re.exec(t))!==null) r.push({msg:'Remove em/en dash — use a comma or full stop',from:m.index,to:m.index+1}); return r; },
+      fix(t){ return t.replace(/—|–/g,', ').replace(/ , /g,', '); }
+    },
+
+    // Sentence starting with 'And'
+    { id:'startand', label:'Sentence starts with \'And\'',
+      detect(t){ const r=[]; let m; const re=/(^|[.!?]\s+)And\s/gm; while((m=re.exec(t))!==null){ const pos=m.index+(m[1]||'').length; r.push({msg:'Do not start a sentence with \'And\'',from:pos,to:pos+3}); } return r; },
+      fix(t){ return t.replace(/(^|([.!?]\s+))And\s/gm,(match,p1,p2)=>{ const sep=p2||p1||''; return sep+''; }); }
+    },
+
+    // Digits 1-9 as standalone numbers
+    { id:'numwords', label:'Single-digit number not written as a word',
+      detect(t){
+        const map={1:'one',2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine'};
+        const r=[]; let m; const re=/(?<![0-9$#])(?<!\w)\b([1-9])\b(?!\s*[%,.\d]|\s*(st|nd|rd|th)\b)/g;
+        while((m=re.exec(t))!==null) r.push({msg:`Write '${m[1]}' as '${map[m[1]]}'`,from:m.index,to:m.index+m[0].length});
+        return r;
+      },
+      fix(t){
+        const map={'1':'one','2':'two','3':'three','4':'four','5':'five','6':'six','7':'seven','8':'eight','9':'nine'};
+        return t.replace(/(?<![0-9$#])(?<!\w)\b([1-9])\b(?!\s*[%,.\d]|\s*(st|nd|rd|th)\b)/g,(m,d)=>map[d]||m);
+      }
+    },
+
+    // $xK or xK for thousands
+    { id:'thousands', label:'\'K\' used for thousands (write in full)',
+      detect(t){ const r=[]; let m; const re=/\$?\d+(\.\d+)?K\b/gi; while((m=re.exec(t))!==null) r.push({msg:`Write '${m[0]}' in full (e.g. $100,000)`,from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/(\$?)(\d+(\.\d+)?)K\b/gi,(match,dollar,num)=>{
+        const n=parseFloat(num)*1000;
+        const formatted=dollar+(n%1===0?n.toLocaleString('en-AU'):(n).toLocaleString('en-AU'));
+        return formatted;
+      }); }
+    },
+
+    // 'Bunnies' or 'the Bunnies'
+    { id:'bunnies', label:'\'Bunnies\' used — use Rabbitohs, Souths, or South Sydney instead',
+      detect(t){ const r=[]; let m; const re=/\bthe\s+Bunnies\b|\bBunnies\b/gi; while((m=re.exec(t))!==null) r.push({msg:`Replace '${m[0]}' with Rabbitohs, Souths, or South Sydney`,from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\bthe\s+Bunnies\b/gi,'the Rabbitohs').replace(/\bBunnies\b/gi,'Rabbitohs'); }
+    },
+
+    // 'club' lowercase when referring to South Sydney
+    { id:'club', label:'\'club\' should be capitalised when referring to the South Sydney Rabbitohs',
+      detect(t){ const r=[]; let m; const re=/\bclub\b/g; while((m=re.exec(t))!==null) r.push({msg:'Capitalise \'club\' to \'Club\'',from:m.index,to:m.index+4}); return r; },
+      fix(t){ return t.replace(/\bclub\b/g,'Club'); }
+    },
+
+    // 'member'/'members'/'membership' lowercase
+    { id:'member', label:'\'member\', \'members\', or \'membership\' should be capitalised',
+      detect(t){ const r=[]; let m; const re=/\b(members?hip|members?)\b/g; while((m=re.exec(t))!==null){ if(m[0]!==m[0].charAt(0).toUpperCase()+m[0].slice(1)) r.push({msg:`Capitalise '${m[0]}' to '${m[0].charAt(0).toUpperCase()+m[0].slice(1)}'`,from:m.index,to:m.index+m[0].length}); } return r; },
+      fix(t){ return t.replace(/\b(members?hip|members?)\b/g,w=>w.charAt(0).toUpperCase()+w.slice(1)); }
+    },
+
+    // 'rugby league' not capitalised
+    { id:'rugbyleague', label:'\'Rugby League\' should have both words capitalised',
+      detect(t){ const r=[]; let m; const re=/\brugby\s+league\b/gi; while((m=re.exec(t))!==null){ if(m[0]!=='Rugby League') r.push({msg:`Capitalise to 'Rugby League'`,from:m.index,to:m.index+m[0].length}); } return r; },
+      fix(t){ return t.replace(/\brugby\s+league\b/gi,'Rugby League'); }
+    },
+
+    // 'Rugby Union' or 'Rugby Sevens' (other codes should be lowercase)
+    { id:'othercodes', label:'Other rugby codes (rugby union, rugby sevens) should be lowercase',
+      detect(t){ const r=[]; let m; const re=/\bRugby\s+(Union|Sevens|Tens|League\s+Sevens)\b/g; while((m=re.exec(t))!==null) r.push({msg:`Write '${m[0]}' as '${m[0].toLowerCase()}'`,from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\bRugby\s+(Union|Sevens|Tens|League\s+Sevens)\b/g,w=>w.toLowerCase()); }
+    },
+
+    // 'Red and Green' capitalised (should be lowercase)
+    { id:'redgreen', label:'\'red and green\' should not be capitalised',
+      detect(t){ const r=[]; let m; const re=/\b(Red and Green|Red And Green|red and Green|Red and green)\b/g; while((m=re.exec(t))!==null) r.push({msg:`Write '${m[0]}' as 'red and green'`,from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\b(Red and Green|Red And Green|red and Green|Red and green)\b/g,'red and green'); }
+    },
+
+    // Round capitalised (should be lowercase)
+    { id:'round', label:'\'Round\' should be lowercase when referring to NRL rounds',
+      detect(t){ const r=[]; let m; const re=/\bRound\s+(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\b/g; while((m=re.exec(t))!==null) r.push({msg:`Write '${m[0]}' as '${m[0].toLowerCase()}'`,from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\bRound\s+(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\b/g,w=>w.toLowerCase()); }
+    },
+
+    // 'Heffron' without 'Park'
+    { id:'heffron', label:'\'Heffron\' should always include \'Park\' (Heffron Park)',
+      detect(t){ const r=[]; let m; const re=/\bHeffron\b(?!\s+Park)/g; while((m=re.exec(t))!==null) r.push({msg:'Write \'Heffron Park\' not just \'Heffron\'',from:m.index,to:m.index+m[0].length}); return r; },
+      fix(t){ return t.replace(/\bHeffron\b(?!\s+Park)/g,'Heffron Park'); }
+    },
+
+    // 'Flegg' without 'Jersey Flegg Cup'
+    { id:'flegg', label:'\'Flegg\' should be written as \'Jersey Flegg Cup\'',
+      detect(t){ const r=[]; let m; const re=/\bFlegg\b(?!\s+Cup)/g; while((m=re.exec(t))!==null){ if(!/Jersey\s+Flegg/.test(t.slice(Math.max(0,m.index-10),m.index))) r.push({msg:'Write \'Jersey Flegg Cup\' not just \'Flegg\'',from:m.index,to:m.index+m[0].length}); } return r; },
+      fix(t){ return t.replace(/\bFlegg\b(?!\s+Cup)/g,'Jersey Flegg Cup'); }
+    },
+
+    // US spelling fixes
+    { id:'spelling', label:'US spelling detected (use Australian spelling)',
+      detect(t){
+        const pairs=[['capitalize','capitalise'],['capitalized','capitalised'],['capitalizing','capitalising'],['color','colour'],['colors','colours'],['colored','coloured'],['center','centre'],['centered','centred'],['recognize','recognise'],['recognized','recognised'],['organize','organise'],['organized','organised'],['analyze','analyse'],['analyzed','analysed'],['defense','defence'],['offense','offence'],['license','licence'],['practice','practise'],['program','programme'],['labeled','labelled'],['traveled','travelled'],['skillful','skilful'],['fulfill','fulfil'],['catalog','catalogue'],['dialog','dialogue'],['honor','honour'],['honored','honoured'],['favorite','favourite'],['favorites','favourites'],['neighbor','neighbour'],['neighbors','neighbours'],['behavior','behaviour'],['behaviors','behaviours'],['flavor','flavour'],['theater','theatre'],['maneuver','manoeuvre']];
+        const r=[];
+        for(const [us,au] of pairs){
+          const re=new RegExp(`\\b${us}\\b`,'gi');
+          let m;
+          while((m=re.exec(t))!==null) r.push({msg:`Use Australian spelling: '${m[0]}' should be '${au}'`,from:m.index,to:m.index+m[0].length});
+        }
+        return r;
+      },
+      fix(t){
+        const pairs=[['capitalize','capitalise'],['capitalized','capitalised'],['capitalizing','capitalising'],['color','colour'],['colors','colours'],['colored','coloured'],['center','centre'],['centered','centred'],['recognize','recognise'],['recognized','recognised'],['organize','organise'],['organized','organised'],['analyze','analyse'],['analyzed','analysed'],['defense','defence'],['offense','offence'],['license','licence'],['practice','practise'],['program','programme'],['labeled','labelled'],['traveled','travelled'],['skillful','skilful'],['fulfill','fulfil'],['catalog','catalogue'],['dialog','dialogue'],['honor','honour'],['honored','honoured'],['favorite','favourite'],['favorites','favourites'],['neighbor','neighbour'],['neighbors','neighbours'],['behavior','behaviour'],['behaviors','behaviours'],['flavor','flavour'],['theater','theatre'],['maneuver','manoeuvre']];
+        let out=t;
+        for(const [us,au] of pairs){
+          out=out.replace(new RegExp(`\\b${us}\\b`,'gi'),m=>{ const up=m[0]===m[0].toUpperCase(); return up?au.toUpperCase():m[0]===m[0].charAt(0).toUpperCase()+m[0].slice(1).toLowerCase()?au.charAt(0).toUpperCase()+au.slice(1):au; });
+        }
+        return out;
+      }
+    },
+
+    // Sentence not ending with full stop (basic check on last non-empty line)
+    { id:'fullstop', label:'Text does not end with a full stop',
+      detect(t){ const trimmed=t.trimEnd(); if(trimmed.length && !/[.!?]$/.test(trimmed)) return [{msg:'Copy should end with a full stop',from:trimmed.length-1,to:trimmed.length}]; return []; },
+      fix(t){ const trimmed=t.trimEnd(); if(trimmed.length && !/[.!?]$/.test(trimmed)) return trimmed+'.'; return t; }
+    },
+  ];
+
+  const GRADES = [
+    {max:0,  grade:'A+', label:'Perfect',           bg:'#15803d'},
+    {max:1,  grade:'A',  label:'Excellent',          bg:'#16a34a'},
+    {max:3,  grade:'B',  label:'Good with minor fixes', bg:'#ca8a04'},
+    {max:6,  grade:'C',  label:'Needs some work',    bg:'#ea580c'},
+    {max:10, grade:'D',  label:'Significant issues', bg:'#dc2626'},
+    {max:Infinity, grade:'E', label:'Major rework needed', bg:'#7f1d1d'},
+  ];
+
+  function getGrade(count){
+    return GRADES.find(g=>count<=g.max)||GRADES[GRADES.length-1];
+  }
+
+  window.jezCheck = function(){
+    const input = document.getElementById('jezInput').value;
+    if(!input.trim()) return;
+
+    // Collect all issues
+    const allIssues = [];
+    for(const rule of RULES){
+      const hits = rule.detect(input);
+      if(hits.length){
+        for(const h of hits) allIssues.push({rule, hit:h});
+      }
+    }
+
+    // Apply all fixes in sequence
+    let fixed = input;
+    for(const rule of RULES) fixed = rule.fix(fixed);
+
+    // Grade
+    const count = allIssues.length;
+    const grade = getGrade(count);
+
+    // Render grade badge
+    const badge = document.getElementById('jezGradeBadge');
+    badge.textContent = grade.grade;
+    badge.style.background = grade.bg;
+    document.getElementById('jezGradeLabel').textContent = grade.label;
+    document.getElementById('jezIssueSummary').textContent = count === 0 ? 'No issues found.' : `${count} issue${count===1?'':'s'} found and corrected.`;
+
+    // Render issues list
+    const list = document.getElementById('jezIssuesList');
+    if(allIssues.length === 0){
+      list.innerHTML = '<p style="color:#15803d;font-size:13px;font-weight:600;margin:0">No issues — great work.</p>';
+    } else {
+      // Group by rule
+      const byRule = {};
+      for(const {rule,hit} of allIssues){
+        if(!byRule[rule.id]) byRule[rule.id]={label:rule.label, msgs:[]};
+        byRule[rule.id].msgs.push(hit.msg);
+      }
+      list.innerHTML = Object.values(byRule).map(g=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px">
+          <span style="flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#fef2f2;border:1.5px solid #fca5a5;display:flex;align-items:center;justify-content:center;margin-top:1px">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:2px">${g.label}</div>
+            ${[...new Set(g.msgs)].map(m=>`<div style="font-size:12px;color:#6b7280;margin-top:2px">${m}</div>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render fixed copy
+    const fixedTa = document.getElementById('jezFixed');
+    fixedTa.value = fixed;
+    fixedTa.style.height = 'auto';
+    fixedTa.style.height = (fixedTa.scrollHeight + 2) + 'px';
+
+    document.getElementById('jezResults').style.display = '';
+  };
+
+  window.jezCopyFixed = function(btn){
+    const val = document.getElementById('jezFixed').value;
+    navigator.clipboard.writeText(val).then(()=>{
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(()=>btn.textContent=orig, 1800);
+    });
+  };
+
+})();
+// ── End JezBot ───────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>
