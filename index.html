@@ -3671,11 +3671,11 @@ function parseSquadText(raw){
 
 function formatSquad(starters, interchange){
   const lines = [];
-  starters.forEach(p => lines.push(`${p.num}- ${p.name}`));
+  starters.forEach(p => lines.push(`${p.num}- ${p.name}  `));
   if(interchange.length){
     lines.push('');
-    lines.push('**Interchange:**');
-    interchange.forEach(p => lines.push(`${p.num}- ${p.name}`));
+    lines.push('**Interchange:**  ');
+    interchange.forEach(p => lines.push(`${p.num}- ${p.name}  `));
   }
   return lines.join('\n');
 }
