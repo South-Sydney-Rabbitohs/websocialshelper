@@ -1138,7 +1138,9 @@ button{touch-action:manipulation}
 
     <!-- Left: Input card -->
     <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;flex-direction:column">
-      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Paste your copy</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Paste your copy</span>
+      </div>
       <textarea id="jezInput" oninput="jezLive()" rows="12" placeholder="Paste your article, social post, or any copy here…" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:220px"></textarea>
 
       <!-- Stats bar -->
@@ -3434,6 +3436,77 @@ const SQ_ROUNDS = {
 // Auto-select the upcoming round based on today's date
 const ROUND_DATES = [[1,'2026-03-08'],[2,'2026-03-13'],[3,'2026-03-21'],[5,'2026-04-03'],[6,'2026-04-11'],[7,'2026-04-18'],[8,'2026-04-25'],[9,'2026-05-03'],[10,'2026-05-09'],[11,'2026-05-15'],[12,'2026-05-24'],[14,'2026-06-04'],[15,'2026-06-11'],[17,'2026-06-25'],[18,'2026-07-03'],[19,'2026-07-12'],[20,'2026-07-18'],[21,'2026-07-24'],[22,'2026-08-02'],[23,'2026-08-08'],[24,'2026-08-14'],[25,'2026-08-22'],[26,'2026-08-29'],[27,'2026-09-04']];
 
+window.sqRebuildBraze = function sqRebuildBraze(){
+  const r = parseInt(document.getElementById('sqRound').value);
+  if(!r || !SQ_ROUNDS[r]) return;
+  const {opponent, day, time, venue} = SQ_ROUNDS[r];
+  const articleId = (document.getElementById('sqArticleId').value || '').trim();
+
+  // Title
+  const pushTitleEl = document.getElementById('sqPushTitle');
+  pushTitleEl.value = '20-MAN SQUAD 👥';
+  pushTitleEl.style.height = 'auto';
+  pushTitleEl.style.height = (pushTitleEl.scrollHeight + 2) + 'px';
+
+  // Push message options
+  const timeLabel = time ? ` ${time} AEST` : '';
+  const dayLower = day.toLowerCase();
+  const options = [
+    `Our 20-man squad for ${day}'s clash with the ${opponent} is here.`,
+    `South Sydney's 20-man squad for Round ${r} vs the ${opponent} has been named.`,
+    `Our 20-man squad for ${day}'s Round ${r} clash with the ${opponent} is in.`,
+    `Our 20-man squad vs the ${opponent} has been updated.`,
+  ];
+  const optionsEl = document.getElementById('sqPushOptions');
+  optionsEl.innerHTML = '';
+  const currentMsg = document.getElementById('sqPushMsg').value;
+  options.forEach((opt, i) => {
+    const row = document.createElement('label');
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;line-height:1.55;color:#374151;padding:8px 10px;border-radius:7px;border:1.5px solid #e5e7eb;background:#fafafa';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'sqPushOpt';
+    radio.value = opt;
+    radio.style.cssText = 'margin-top:3px;flex-shrink:0;accent-color:var(--g)';
+    radio.checked = i === 0 || currentMsg === opt;
+    radio.addEventListener('change', () => {
+      const ta = document.getElementById('sqPushMsg');
+      ta.value = opt;
+      ta.style.height = 'auto';
+      ta.style.height = (ta.scrollHeight + 2) + 'px';
+    });
+    if(radio.checked && i === 0 && !currentMsg){
+      const ta = document.getElementById('sqPushMsg');
+      if(!ta.value) { ta.value = opt; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; }
+    }
+    const span = document.createElement('span');
+    span.textContent = opt;
+    row.appendChild(radio);
+    row.appendChild(span);
+    optionsEl.appendChild(row);
+  });
+  // Ensure sqPushMsg is set to first option if empty
+  const msgTa = document.getElementById('sqPushMsg');
+  if(!msgTa.value){ msgTa.value = options[0]; msgTa.style.height='auto'; msgTa.style.height=(msgTa.scrollHeight+2)+'px'; }
+
+  // Slug: "rabbitohs-20-man-squad-for-round-N-vs-opponent-slug-2026"
+  const oppSlug = opponent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const urlSlug = `rabbitohs-20-man-squad-for-round-${r}-vs-${oppSlug}-2026`;
+
+  // Deeplinks
+  const deeplink = articleId ? `rabbitohs://news?cmsArticleId=${articleId}` : 'rabbitohs://news?cmsArticleId=';
+  const setTa = (id, val) => {
+    const el = document.getElementById(id);
+    el.value = val;
+    el.style.height = 'auto';
+    el.style.height = (el.scrollHeight + 2) + 'px';
+  };
+  setTa('sqDeeplinkIos', deeplink);
+  setTa('sqWebUrl', `https://www.rabbitohs.com.au/news/-${urlSlug}`);
+
+  document.getElementById('sqBrazeCard').style.display = '';
+};
+
 function sqAutoSelectRound(){
   const today = new Date().toISOString().slice(0,10);
   const sel = document.getElementById('sqRound');
@@ -3628,77 +3701,6 @@ function sqRebuildFull(squadText){
   sqRebuildBraze();
 }
 
-window.sqRebuildBraze = function sqRebuildBraze(){
-  const r = parseInt(document.getElementById('sqRound').value);
-  if(!r || !SQ_ROUNDS[r]) return;
-  const {opponent, day, time, venue} = SQ_ROUNDS[r];
-  const articleId = (document.getElementById('sqArticleId').value || '').trim();
-
-  // Title
-  const pushTitleEl = document.getElementById('sqPushTitle');
-  pushTitleEl.value = '20-MAN SQUAD 👥';
-  pushTitleEl.style.height = 'auto';
-  pushTitleEl.style.height = (pushTitleEl.scrollHeight + 2) + 'px';
-
-  // Push message options
-  const timeLabel = time ? ` ${time} AEST` : '';
-  const dayLower = day.toLowerCase();
-  const options = [
-    `Our 20-man squad for ${day}'s clash with the ${opponent} is here.`,
-    `South Sydney's 20-man squad for Round ${r} vs the ${opponent} has been named.`,
-    `Our 20-man squad for ${day}'s Round ${r} clash with the ${opponent} is in.`,
-    `Our 20-man squad vs the ${opponent} has been updated.`,
-  ];
-  const optionsEl = document.getElementById('sqPushOptions');
-  optionsEl.innerHTML = '';
-  const currentMsg = document.getElementById('sqPushMsg').value;
-  options.forEach((opt, i) => {
-    const row = document.createElement('label');
-    row.style.cssText = 'display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;line-height:1.55;color:#374151;padding:8px 10px;border-radius:7px;border:1.5px solid #e5e7eb;background:#fafafa';
-    const radio = document.createElement('input');
-    radio.type = 'radio';
-    radio.name = 'sqPushOpt';
-    radio.value = opt;
-    radio.style.cssText = 'margin-top:3px;flex-shrink:0;accent-color:var(--g)';
-    radio.checked = i === 0 || currentMsg === opt;
-    radio.addEventListener('change', () => {
-      const ta = document.getElementById('sqPushMsg');
-      ta.value = opt;
-      ta.style.height = 'auto';
-      ta.style.height = (ta.scrollHeight + 2) + 'px';
-    });
-    if(radio.checked && i === 0 && !currentMsg){
-      const ta = document.getElementById('sqPushMsg');
-      if(!ta.value) { ta.value = opt; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; }
-    }
-    const span = document.createElement('span');
-    span.textContent = opt;
-    row.appendChild(radio);
-    row.appendChild(span);
-    optionsEl.appendChild(row);
-  });
-  // Ensure sqPushMsg is set to first option if empty
-  const msgTa = document.getElementById('sqPushMsg');
-  if(!msgTa.value){ msgTa.value = options[0]; msgTa.style.height='auto'; msgTa.style.height=(msgTa.scrollHeight+2)+'px'; }
-
-  // Slug: "rabbitohs-20-man-squad-for-round-N-vs-opponent-slug-2026"
-  const oppSlug = opponent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const urlSlug = `rabbitohs-20-man-squad-for-round-${r}-vs-${oppSlug}-2026`;
-
-  // Deeplinks
-  const deeplink = articleId ? `rabbitohs://news?cmsArticleId=${articleId}` : 'rabbitohs://news?cmsArticleId=';
-  const setTa = (id, val) => {
-    const el = document.getElementById(id);
-    el.value = val;
-    el.style.height = 'auto';
-    el.style.height = (el.scrollHeight + 2) + 'px';
-  };
-  setTa('sqDeeplinkIos', deeplink);
-  setTa('sqWebUrl', `https://www.rabbitohs.com.au/news/-${urlSlug}`);
-
-  document.getElementById('sqBrazeCard').style.display = '';
-};
-
 window.sqParse = function(){
   const raw = document.getElementById('sqPasteInput').value;
   if(!raw.trim()) return;
@@ -3716,19 +3718,28 @@ window.sqParseImg = function(){
 window.sqCopy = function(id, btn){
   const el = document.getElementById(id);
   if(!el) return;
-  const val = el.value;
+  const val = el.value !== undefined ? el.value : el.innerText;
   const confirm = () => {
     const orig = btn.textContent;
     btn.textContent = 'Copied!';
     btn.classList.add('sq-copied');
     setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('sq-copied'); }, 1400);
   };
+  const fallback = () => {
+    const tmp = document.createElement('textarea');
+    tmp.value = val;
+    tmp.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(tmp);
+    tmp.focus();
+    tmp.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(tmp);
+    confirm();
+  };
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(val).then(confirm).catch(()=>{
-      el.select(); document.execCommand('copy'); confirm();
-    });
+    navigator.clipboard.writeText(val).then(confirm).catch(fallback);
   } else {
-    el.select(); document.execCommand('copy'); confirm();
+    fallback();
   }
 };
 
