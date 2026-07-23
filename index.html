@@ -1138,10 +1138,13 @@ button{touch-action:manipulation}
 
     <!-- Left: Input card -->
     <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;min-height:30px">
         <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Paste your copy</span>
       </div>
-      <textarea id="jezInput" oninput="jezLive()" rows="12" placeholder="Paste your article, social post, or any copy here…" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:220px"></textarea>
+      <div style="position:relative">
+        <div id="jezInputHighlight" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;white-space:pre-wrap;word-wrap:break-word;overflow:hidden;box-sizing:border-box;color:transparent;pointer-events:none;border:1.5px solid transparent;border-radius:9px"></div>
+        <textarea id="jezInput" oninput="jezLive()" onscroll="jezSyncHighlightScroll()" rows="12" placeholder="Paste your article, social post, or any copy here…" style="position:relative;background:transparent;width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:12px 14px;font-family:inherit;font-size:13px;line-height:1.65;resize:vertical;outline:none;box-sizing:border-box;min-height:220px"></textarea>
+      </div>
 
       <!-- Stats bar -->
       <div id="jezStats" style="display:flex;gap:18px;margin-top:10px;font-size:12px;color:#9ca3af;padding:0 2px">
@@ -1166,7 +1169,7 @@ button{touch-action:manipulation}
 
     <!-- Right: Corrected copy card (always visible, populated when there's input) -->
     <div style="background:#fff;border:1px solid #d4d8d4;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;min-height:30px">
         <span style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Corrected copy</span>
         <button onclick="jezCopyFixed(this)" style="background:var(--g);color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer">Copy</button>
       </div>
@@ -4030,13 +4033,48 @@ window.sqCopy = function(id, btn){
     return GRADES.find(g=>count<=g.max)||GRADES[GRADES.length-1];
   }
 
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderInputHighlight(input, allIssues){
+    const backdrop = document.getElementById('jezInputHighlight');
+    if(!backdrop) return;
+    if(!allIssues.length){ backdrop.innerHTML = escapeHtml(input); return; }
+
+    // Merge overlapping/adjacent issue ranges so marks don't nest or double up
+    const ranges = allIssues.map(({hit})=>[hit.from, hit.to]).filter(([f,t])=>Number.isFinite(f)&&Number.isFinite(t)&&t>f).sort((a,b)=>a[0]-b[0]);
+    const merged = [];
+    for(const [from,to] of ranges){
+      const last = merged[merged.length-1];
+      if(last && from <= last[1]) last[1] = Math.max(last[1], to);
+      else merged.push([from,to]);
+    }
+
+    let html = '';
+    let pos = 0;
+    for(const [from,to] of merged){
+      if(from > pos) html += escapeHtml(input.slice(pos, from));
+      html += `<mark style="background:rgba(220,38,38,.18);border-bottom:2px solid #dc2626;color:transparent;border-radius:2px">${escapeHtml(input.slice(from, to))}</mark>`;
+      pos = to;
+    }
+    if(pos < input.length) html += escapeHtml(input.slice(pos));
+    backdrop.innerHTML = html;
+  }
+
+  window.jezSyncHighlightScroll = function(){
+    const ta = document.getElementById('jezInput');
+    const backdrop = document.getElementById('jezInputHighlight');
+    if(ta && backdrop){ backdrop.scrollTop = ta.scrollTop; backdrop.scrollLeft = ta.scrollLeft; }
+  };
+
   function runCheck(input){
     // Stats
     document.getElementById('jezCharCount').textContent = input.length;
     document.getElementById('jezWordCount').textContent = input.trim() ? input.trim().split(/\s+/).length : 0;
     document.getElementById('jezLineCount').textContent = input ? input.split(/\n/).length : 0;
 
-    if(!input.trim()){ document.getElementById('jezResults').style.display='none'; return; }
+    if(!input.trim()){ document.getElementById('jezResults').style.display='none'; document.getElementById('jezInputHighlight').innerHTML=''; return; }
 
     // Collect all issues
     const allIssues = [];
@@ -4046,6 +4084,8 @@ window.sqCopy = function(id, btn){
         for(const h of hits) allIssues.push({rule, hit:h});
       } catch(e){ console.warn('JezBot detect error ['+rule.id+']:', e); }
     }
+
+    renderInputHighlight(input, allIssues);
 
     // Apply all fixes in sequence
     let fixed = input;
